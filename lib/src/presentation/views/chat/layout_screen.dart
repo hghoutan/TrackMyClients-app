@@ -1,0 +1,93 @@
+import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:trackmyclients_app/src/presentation/views/chat/select_client.dart';
+import 'package:trackmyclients_app/src/utils/functions/next_screen.dart';
+
+import '../../widgets/features/chat/contacts_list.dart';
+
+class LayoutScreen extends StatefulWidget {
+  const LayoutScreen({super.key});
+
+  @override
+  State<LayoutScreen> createState() => _LayoutScreenState();
+}
+
+class _LayoutScreenState extends State<LayoutScreen> {
+  TextEditingController searchController = TextEditingController();
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        body: SafeArea(
+      child: SingleChildScrollView(
+        physics: const ScrollPhysics(),
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24.0),
+              child: SizedBox(
+                height: 50,
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: TextFormField(
+                        controller: searchController,
+                        decoration: InputDecoration(
+                          filled: true,
+                          fillColor: Colors.white,
+                          enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12.0),
+                              borderSide: BorderSide.none),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12.0),
+                            borderSide: BorderSide(
+                                color: Theme.of(context).colorScheme.primary),
+                          ),
+                          prefixIcon: const SizedBox(
+                              width: 50,
+                              child: Align(
+                                  alignment: Alignment.center,
+                                  child: FaIcon(
+                                    FontAwesomeIcons.search,
+                                  ))),
+                          hintText: 'Search message...',
+                          hintStyle: Theme.of(context)
+                              .textTheme
+                              .titleMedium!
+                              .copyWith(color: const Color(0xff717171)),
+                          contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 18.0, vertical: 12.0),
+                        ),
+                        validator: (value) {},
+                        style: Theme.of(context).textTheme.titleMedium,
+                        onTapOutside: (event) {
+                          FocusScope.of(context).unfocus();
+                        },
+                      ),
+                    ),
+                    const SizedBox(width: 22.0),
+                    InkWell(
+                      onTap: () {
+                        nextScreenAnimation(context, const  SelectClientsScreen());
+                      },
+                      child: Container(
+                        width: 50,
+                        height: 50,
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(12.0)),
+                        child: const Center(
+                            child: FaIcon(Icons.open_in_new_rounded)),
+                      ),
+                    )
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 24.0),
+            const ContactsList()
+          ],
+        ),
+      ),
+    ));
+  }
+}
