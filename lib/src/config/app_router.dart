@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:trackmyclients_app/src/presentation/views/auth/admin_login.dart';
+import 'package:trackmyclients_app/src/admin/presentation/views/auth/admin_login.dart';
 
-import '../presentation/views/splash.dart';
+import '../admin/presentation/views/splash.dart';
 
 class Routes {
   static final routes = {

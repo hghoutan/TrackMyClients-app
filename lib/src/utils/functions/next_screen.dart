@@ -55,8 +55,8 @@ void nextScreenAnimation(context, page, {rootNavgation = false}) {
       ),
     ));
   }
-void nextScreenReplaceAnimation(context, page) {
-    Navigator.of(context).pushReplacement(PageRouteBuilder(
+void nextScreenReplaceAnimation(context, page,{rootNavgation = false}) {
+    Navigator.of(context, rootNavigator: rootNavgation).pushReplacement(PageRouteBuilder(
       pageBuilder: (
         BuildContext context,
         Animation<double> animation,
@@ -75,8 +75,8 @@ void nextScreenReplaceAnimation(context, page) {
     ));
   }
 
-  void nextScreenCloseOthersAnimation(context, page) {
-    Navigator.of(context).pushAndRemoveUntil(PageRouteBuilder(
+  void nextScreenCloseOthersAnimation(context, page, {rootNavgation = false}) {
+    Navigator.of(context, rootNavigator: rootNavgation).pushAndRemoveUntil(PageRouteBuilder(
       pageBuilder: (
         BuildContext context,
         Animation<double> animation,
