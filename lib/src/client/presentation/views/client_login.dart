@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:trackmyclients_app/src/admin/presentation/widgets/main_button.dart';
 import 'package:trackmyclients_app/src/admin/presentation/widgets/text_input.dart';
 import 'package:trackmyclients_app/src/client/domain/controllers/client_auth_controller.dart';
-import 'package:trackmyclients_app/src/client/domain/repositories/client_auth_repository.dart';
 import 'package:trackmyclients_app/src/client/presentation/views/client_chat.dart';
 import 'package:trackmyclients_app/src/utils/functions/next_screen.dart';
 

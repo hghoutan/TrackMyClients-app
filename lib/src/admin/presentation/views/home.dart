@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -174,16 +175,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                         decoration: const BoxDecoration(
                                           shape: BoxShape.circle,
                                         ),
-                                        child: Image.network(
-                                          snapshot.data![index - 1].profilePic!,
+                                        child: 
+                                        CachedNetworkImage(
+                                          imageUrl: snapshot.data![index - 1].profilePic!,
                                           width: 70,
                                           height: 70,
-                                          cacheWidth: (250 *
-                                                  MediaQuery.of(context)
-                                                      .devicePixelRatio)
-                                              .round(),
                                           fit: BoxFit.cover,
-                                        ),
+                                        )
                                       ),
                                       const SizedBox(height: 6.0),
                                       Text(

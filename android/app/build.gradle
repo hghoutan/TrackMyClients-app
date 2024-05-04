@@ -27,7 +27,7 @@ if (flutterVersionName == null) {
 
 android {
     namespace "com.ghoutani.trackmyclients_app"
-    compileSdk flutter.compileSdkVersion
+    compileSdk 31
     ndkVersion flutter.ndkVersion
 
     compileOptions {

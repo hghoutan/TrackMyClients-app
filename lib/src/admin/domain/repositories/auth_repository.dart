@@ -56,7 +56,6 @@ class AuthRepository {
         },
         verificationFailed: (error) {
           print('Phone number verification failed.');
-          print(error.toString());
         },
         codeSent: (verificationId, forceResendingToken) {},
         codeAutoRetrievalTimeout: (verificationId) {},

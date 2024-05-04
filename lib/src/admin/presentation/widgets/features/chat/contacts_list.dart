@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -68,7 +69,7 @@ class _ContactsListState extends ConsumerState<ContactsList> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       CircleAvatar(
-                        backgroundImage: NetworkImage(
+                        backgroundImage: CachedNetworkImageProvider(
                           messageData.profilePic,
                         ),
                         radius: 30,

@@ -1,62 +1,74 @@
+import 'package:audioplayers/audioplayers.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:trackmyclients_app/src/admin/presentation/widgets/features/chat/video_player.dart';
 
 import '../../../../../utils/enums/message_enum.dart';
 
-class DisplayTextImage extends StatelessWidget {
+class DisplayTextImage extends StatefulWidget {
   final String message;
   final MessageEnum type;
   final bool isClientSide;
-  const DisplayTextImage({
-    super.key,
-    required this.message,
-    required this.type,
-    this.isClientSide = false
-  });
+  const DisplayTextImage(
+      {super.key,
+      required this.message,
+      required this.type,
+      this.isClientSide = false});
+
+  @override
+  State<DisplayTextImage> createState() => _DisplayTextImageState();
+}
+
+class _DisplayTextImageState extends State<DisplayTextImage> {
+  bool isPlaying = false;
+  final AudioPlayer audioPlayer = AudioPlayer();
 
   @override
   Widget build(BuildContext context) {
-    bool isPlaying = false;
-    // final AudioPlayer audioPlayer = AudioPlayer();
-
-    return type == MessageEnum.text
+    return widget.type == MessageEnum.text
         ? Text(
-            message,
-            style:  TextStyle(
+            widget.message,
+            style: TextStyle(
               fontSize: 16,
-              color: isClientSide ? null : Colors.white,
+              color: widget.isClientSide ? null : Colors.white,
             ),
           )
-        : type == MessageEnum.audio
+        : widget.type == MessageEnum.audio
             ? StatefulBuilder(builder: (context, setState) {
                 return IconButton(
                   constraints: const BoxConstraints(
                     minWidth: 100,
                   ),
                   onPressed: () async {
-                    // if (isPlaying) {
-                    //   await audioPlayer.pause();
-                    //   setState(() {
-                    //     isPlaying = false;
-                    //   });
-                    // } else {
-                    //   await audioPlayer.play(UrlSource(message));
-                    //   setState(() {
-                    //     isPlaying = true;
-                    //   });
-                    // }
+                    if (isPlaying) {
+                      await audioPlayer.pause();
+                      setState(() {
+                        isPlaying = false;
+                      });
+                    } else {
+                      await audioPlayer.play(UrlSource(widget.message));
+                      setState(() {
+                        isPlaying = true;
+                      });
+                    }
                   },
-                  icon: Icon(
-                    isPlaying ? Icons.pause_circle : Icons.play_circle,
+                  icon: Padding(
+                    padding: const EdgeInsets.only(bottom: 20.0, top: 10),
+                    child: Icon(
+                      isPlaying ? FontAwesomeIcons.circlePause
+                      : FontAwesomeIcons.circlePlay,
+                      color: Colors.white,
+                    ),
                   ),
                 );
               })
-            // : type == MessageEnum.video
-            //     ? VideoPlayerItem(
-            //         videoUrl: message,
-            //       )
-            : Image.network(
-                message,
-            );
+            : widget.type == MessageEnum.video
+                ? VideoPlayer(
+                    videoUrl: widget.message,
+                  )
+                : CachedNetworkImage(
+                    imageUrl: widget.message,
+                  );
   }
 }

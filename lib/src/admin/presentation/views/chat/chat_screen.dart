@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -46,8 +47,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                     decoration: const BoxDecoration(
                       shape: BoxShape.circle,
                     ),
-                    child: Image.network(
-                      snapshot.data!.profilePic! ,
+                    child: CachedNetworkImage(
+                      imageUrl: snapshot.data!.profilePic! ,
                       width: 40,
                       height: 40,
                       fit: BoxFit.cover,

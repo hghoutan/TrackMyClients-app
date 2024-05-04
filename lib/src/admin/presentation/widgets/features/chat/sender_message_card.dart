@@ -35,7 +35,7 @@ class SenderMessageCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(8.0)
                 ),
                 clipBehavior: Clip.hardEdge,
-                padding: const EdgeInsets.all(8.0),
+                // padding: const EdgeInsets.all(8.0),
                 child: DisplayTextImage(message: message, type: type),
               ) : 
               Padding(
@@ -51,26 +51,13 @@ class SenderMessageCard extends StatelessWidget {
               Positioned(
                 bottom: 2,
                 right: 10,
-                child: Row(
-                  children: [
-                    Text(
-                      date,
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: Colors.grey[600],
-                      ),
-                    ),
-                    const SizedBox(
-                      width: 5,
-                    ),
-                    Icon(
-                      Icons.done_all,
-                      size: 20,
-                      color: Colors.grey[600],
-                    ),
-                  ],
+                child: Text(
+                  date,
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: Colors.grey[600],
+                  ),
                 ),
-                
               ),
             ],
           ),

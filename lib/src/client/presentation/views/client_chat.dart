@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -35,7 +36,6 @@ class _ClientChatScreenState extends ConsumerState<ClientChatScreen>
     super.didChangeAppLifecycleState(state);
     switch (state) {
       case AppLifecycleState.resumed:
-        print('true');
         ref.read(clientAuthControllerProvider).setUserState(widget.id, true);
         break;
       case AppLifecycleState.inactive:
@@ -54,7 +54,7 @@ class _ClientChatScreenState extends ConsumerState<ClientChatScreen>
   Widget build(BuildContext context) {
     // use it to establish data by loading it here
     ref.read(clientDataAuthProvider).whenData((value) => value);
-    
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
@@ -76,8 +76,8 @@ class _ClientChatScreenState extends ConsumerState<ClientChatScreen>
                     decoration: const BoxDecoration(
                       shape: BoxShape.circle,
                     ),
-                    child: Image.network(
-                      'https://firebasestorage.googleapis.com/v0/b/trackmyclients-app.appspot.com/o/profilePic%2FELmMPgAkv5e3ydOmOcodSnb1Xc72?alt=media&token=9cfca187-e17e-4fb3-a28c-6976ff2fb786',
+                    child: CachedNetworkImage(
+                      imageUrl: 'https://firebasestorage.googleapis.com/v0/b/trackmyclients-app.appspot.com/o/profilePic%2FELmMPgAkv5e3ydOmOcodSnb1Xc72?alt=media&token=9cfca187-e17e-4fb3-a28c-6976ff2fb786',
                       width: 40,
                       height: 40,
                       fit: BoxFit.cover,

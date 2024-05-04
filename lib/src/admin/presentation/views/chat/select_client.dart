@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:trackmyclients_app/src/admin/domain/models/client.dart';
@@ -59,7 +60,7 @@ class SelectClientsScreen extends ConsumerWidget {
                           leading: client.profilePic == null
                               ? null
                               : CircleAvatar(
-                                  backgroundImage: NetworkImage(client.profilePic!),
+                                  backgroundImage: CachedNetworkImageProvider(client.profilePic!),
                                   radius: 30,
                                 ),
                         ),
