@@ -88,7 +88,6 @@ class ChatRepository {
   }) async {
     try {
       DateTime timeSent = DateTime.now();
-
       var clientDataMap = await firestore
           .collection('users')
           .doc(auth.currentUser!.uid)
@@ -96,6 +95,7 @@ class ChatRepository {
           .doc(recieverUserId)
           .get();
       ClientData receiverClientData = ClientData.fromMap(clientDataMap.data()!);
+
       String messageId = const Uuid().v1();
 
       _saveDataToContactsSubcollection(
@@ -115,7 +115,9 @@ class ChatRepository {
         username: "${senderUser.firstName} ${senderUser.lastName} ",
         recieverUserName: receiverClientData.name,
       );
-    } catch (e) {}
+    } catch (e) {
+      print(e.toString());
+    }
   }
 
   void _saveDataToContactsSubcollection(
@@ -204,6 +206,7 @@ class ChatRepository {
           message.toMap(),
         );
   }
+
   void sendFileMessage({
     required BuildContext context,
     required File file,
@@ -216,18 +219,20 @@ class ChatRepository {
       var timeSent = DateTime.now();
       var messageId = const Uuid().v1();
 
-      String imageUrl = await ref
-          .read(firebaseStorageRepositoryProvider)
-          .storeFileToFirebase(
-            'chat/${messageEnum.type}/${senderUserData.id}/$recieverUserId/$messageId',
-            file,
-          );
+      String imageUrl =
+          await ref.read(firebaseStorageRepositoryProvider).storeFileToFirebase(
+                'chat/${messageEnum.type}/${senderUserData.id}/$recieverUserId/$messageId',
+                file,
+              );
 
       ClientData? recieverClientData;
-      var clientDataMap =
-          await firestore.collection('users').doc(auth.currentUser!.uid).collection('clients').doc(recieverUserId).get();
+      var clientDataMap = await firestore
+          .collection('users')
+          .doc(auth.currentUser!.uid)
+          .collection('clients')
+          .doc(recieverUserId)
+          .get();
       recieverClientData = ClientData.fromMap(clientDataMap.data()!);
-      
 
       String contactMsg;
 
@@ -257,7 +262,7 @@ class ChatRepository {
         text: imageUrl,
         timeSent: timeSent,
         messageId: messageId,
-        username: '${senderUserData.firstName} ${senderUserData.lastName}' ,
+        username: '${senderUserData.firstName} ${senderUserData.lastName}',
         messageType: messageEnum,
         recieverUserName: recieverClientData.name,
       );

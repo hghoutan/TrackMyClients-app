@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:trackmyclients_app/src/admin/domain/models/user.dart';
 
 import '../../../utils/enums/message_enum.dart';
 import '../models/chat.dart';
@@ -24,14 +25,16 @@ class ChatController {
     required this.chatRepository,
     required this.ref,
   });
-  
+
   Stream<List<ChatContact>> chatContacts() {
     return chatRepository.getChatContacts();
   }
+
   Stream<List<Message>> chatStream(String recieverUserId) {
     return chatRepository.getChatStream(recieverUserId);
   }
-   void sendTextMessage(
+
+  void sendTextMessage(
     BuildContext context,
     String text,
     String recieverUserId,
@@ -45,6 +48,7 @@ class ChatController {
           ),
         );
   }
+
   void sendFileMessage(
     BuildContext context,
     File file,
@@ -62,6 +66,4 @@ class ChatController {
           ),
         );
   }
-
-
 }

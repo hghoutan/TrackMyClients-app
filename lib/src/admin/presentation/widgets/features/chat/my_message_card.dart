@@ -20,7 +20,10 @@ class MyMessageCard extends StatelessWidget {
       alignment: Alignment.centerRight,
       child: ConstrainedBox(
         constraints: BoxConstraints(
-            maxWidth: MediaQuery.of(context).size.width - 45, minWidth: 110),
+            maxWidth: MediaQuery.of(context).size.width - 45, minWidth: 110,
+            minHeight: 50
+          ),
+            
         child: Card(
           elevation: 1,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
@@ -28,6 +31,15 @@ class MyMessageCard extends StatelessWidget {
           margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
           child: Stack(
             children: [
+              type == MessageEnum.image ?
+              Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8.0)
+                ),
+                clipBehavior: Clip.hardEdge,
+                padding: const EdgeInsets.all(8.0),
+                child: DisplayTextImage(message: message, type: type),
+              ) :
               Padding(
                 padding: const EdgeInsets.only(
                   left: 10,
@@ -41,7 +53,7 @@ class MyMessageCard extends StatelessWidget {
                           ),
               ),
               Positioned(
-                bottom: 4,
+                bottom: type == MessageEnum.image ? 10 : 4,
                 right: 10,
                 child: Row(
                   children: [
@@ -49,7 +61,7 @@ class MyMessageCard extends StatelessWidget {
                       date,
                       style: const TextStyle(
                         fontSize: 13,
-                        color: Colors.white60,
+                        color: Colors.white,
                       ),
                     ),
                     const SizedBox(
@@ -58,7 +70,7 @@ class MyMessageCard extends StatelessWidget {
                     const Icon(
                       Icons.done_all,
                       size: 20,
-                      color: Colors.white60,
+                      color: Colors.white,
                     ),
                   ],
                 ),

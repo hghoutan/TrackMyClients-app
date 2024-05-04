@@ -52,6 +52,9 @@ class _ClientChatScreenState extends ConsumerState<ClientChatScreen>
 
   @override
   Widget build(BuildContext context) {
+    // use it to establish data by loading it here
+    ref.read(clientDataAuthProvider).whenData((value) => value);
+    
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,

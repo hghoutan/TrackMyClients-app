@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:trackmyclients_app/src/admin/domain/models/message.dart';
@@ -23,6 +24,7 @@ class _ChatListState extends ConsumerState<ChatList> {
   final ScrollController messageController = ScrollController();
   @override
   void initState() {
+    
     super.initState();
   }
 
@@ -44,15 +46,19 @@ class _ChatListState extends ConsumerState<ChatList> {
                 .chatStream(widget.recieverUserId),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const CircularProgressIndicator();
+            return const SizedBox(
+              height: 30,
+              child: CircularProgressIndicator()
+            );
           }
 
-          // SchedulerBinding.instance.addPostFrameCallback((_) {
-          //   messageController
-          //       .jumpTo(messageController.position.maxScrollExtent);
-          // });
+          SchedulerBinding.instance.addPostFrameCallback((_) {
+            messageController
+                .jumpTo(messageController.position.maxScrollExtent);
+          });
 
           return ListView.builder(
+            controller: messageController,
             itemCount: snapshot.data!.length,
             itemBuilder: (context, index) {
               final messageData = snapshot.data![index];
@@ -69,6 +75,7 @@ class _ChatListState extends ConsumerState<ChatList> {
               return SenderMessageCard(
                 message: messageData.text,
                 date: timeSent,
+                type: messageData.type,
               );
             },
           );

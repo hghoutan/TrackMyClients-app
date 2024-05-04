@@ -23,11 +23,13 @@ class _LayoutScreenState extends ConsumerState<LayoutScreen>
     WidgetsBinding.instance.addObserver(this);
     super.initState();
   }
+
   @override
   void dispose() {
     super.dispose();
     WidgetsBinding.instance.removeObserver(this);
   }
+
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
@@ -48,6 +50,9 @@ class _LayoutScreenState extends ConsumerState<LayoutScreen>
 
   @override
   Widget build(BuildContext context) {
+    // use it to establish data by loading it here
+    ref.read(userDataAuthProvider).whenData((value) => value);
+
     return Scaffold(
         body: SafeArea(
       child: SingleChildScrollView(

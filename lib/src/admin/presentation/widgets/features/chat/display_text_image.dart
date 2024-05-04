@@ -6,10 +6,12 @@ import '../../../../../utils/enums/message_enum.dart';
 class DisplayTextImage extends StatelessWidget {
   final String message;
   final MessageEnum type;
+  final bool isClientSide;
   const DisplayTextImage({
     super.key,
     required this.message,
     required this.type,
+    this.isClientSide = false
   });
 
   @override
@@ -20,9 +22,9 @@ class DisplayTextImage extends StatelessWidget {
     return type == MessageEnum.text
         ? Text(
             message,
-            style: const TextStyle(
+            style:  TextStyle(
               fontSize: 16,
-              color: Colors.white,
+              color: isClientSide ? null : Colors.white,
             ),
           )
         : type == MessageEnum.audio
@@ -53,8 +55,8 @@ class DisplayTextImage extends StatelessWidget {
             //     ? VideoPlayerItem(
             //         videoUrl: message,
             //       )
-            : CachedNetworkImage(
-                imageUrl: message,
-              );
+            : Image.network(
+                message,
+            );
   }
 }

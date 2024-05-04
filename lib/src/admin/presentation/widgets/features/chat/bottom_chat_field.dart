@@ -14,12 +14,10 @@ class BottomChatField extends ConsumerStatefulWidget {
   final String recieverUserId;
   final bool isFromClientSide;
   // final bool isGroupChat;
-  const BottomChatField({
-    super.key,
-    required this.recieverUserId,
-    this.isFromClientSide = false
-    // required this.isGroupChat,
-  });
+  const BottomChatField(
+      {super.key, required this.recieverUserId, this.isFromClientSide = false
+      // required this.isGroupChat,
+      });
 
   @override
   ConsumerState<BottomChatField> createState() => _BottomChatFieldState();
@@ -52,20 +50,20 @@ class _BottomChatFieldState extends ConsumerState<BottomChatField> {
 
   void sendTextMessage() async {
     if (isShowSendButton && _messageController.text.isNotEmpty) {
-      if (widget.isFromClientSide ) {
+      if (widget.isFromClientSide) {
         ref.read(clientChatControllerProvider).sendTextMessage(
-            context,
-            _messageController.text.trim(),
-            widget.recieverUserId,
-          );
+              context,
+              _messageController.text.trim(),
+              widget.recieverUserId,
+            );
       } else {
         ref.read(chatControllerProvider).sendTextMessage(
-            context,
-            _messageController.text.trim(),
-            widget.recieverUserId,
-          );
+              context,
+              _messageController.text.trim(),
+              widget.recieverUserId,
+            );
       }
-      
+
       setState(() {
         _messageController.text = '';
       });
@@ -92,15 +90,26 @@ class _BottomChatFieldState extends ConsumerState<BottomChatField> {
   // }
 
   void sendFileMessage(
-      File file,
-      MessageEnum messageEnum,
-      ) {
-    ref.read(chatControllerProvider).sendFileMessage(
+    File file,
+    MessageEnum messageEnum,
+  ) {
+    if (widget.isFromClientSide) {
+      ref.read(clientChatControllerProvider).sendFileMessage(
           context,
           file,
           widget.recieverUserId,
           messageEnum,
         );
+    }
+    else{
+      ref.read(chatControllerProvider).sendFileMessage(
+        context,
+        file,
+        widget.recieverUserId,
+        messageEnum,
+      );
+    }
+    
   }
 
   void selectImage() async {
