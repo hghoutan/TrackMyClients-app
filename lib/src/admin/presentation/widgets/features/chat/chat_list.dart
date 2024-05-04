@@ -1,9 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:trackmyclients_app/src/admin/domain/models/message.dart';
+import 'package:trackmyclients_app/src/client/domain/controllers/client_chat_controller.dart';
 
 import '../../../../domain/controllers/chat_controller.dart';
 import 'my_message_card.dart';
@@ -11,7 +11,9 @@ import 'sender_message_card.dart';
 
 class ChatList extends ConsumerStatefulWidget {
   final String recieverUserId;
-  const ChatList({required this.recieverUserId, super.key});
+  final bool isFromClientSide;
+  const ChatList(
+      {required this.recieverUserId, this.isFromClientSide = false, super.key});
 
   @override
   ConsumerState<ChatList> createState() => _ChatListState();
@@ -22,8 +24,8 @@ class _ChatListState extends ConsumerState<ChatList> {
   @override
   void initState() {
     super.initState();
-
   }
+
   @override
   void dispose() {
     super.dispose();
@@ -33,8 +35,13 @@ class _ChatListState extends ConsumerState<ChatList> {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<List<Message>>(
-        stream:
-            ref.read(chatControllerProvider).chatStream(widget.recieverUserId),
+        stream: widget.isFromClientSide
+            ? ref
+                .read(clientChatControllerProvider)
+                .chatStream(widget.recieverUserId)
+            : ref
+                .read(chatControllerProvider)
+                .chatStream(widget.recieverUserId),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const CircularProgressIndicator();
@@ -56,6 +63,7 @@ class _ChatListState extends ConsumerState<ChatList> {
                 return MyMessageCard(
                   message: messageData.text,
                   date: timeSent,
+                  type: messageData.type,
                 );
               }
               return SenderMessageCard(

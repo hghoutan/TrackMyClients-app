@@ -1,16 +1,23 @@
+import 'dart:io';
+
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:trackmyclients_app/src/client/domain/controllers/client_chat_controller.dart';
+import 'package:trackmyclients_app/src/utils/utils.dart';
 
+import '../../../../../utils/enums/message_enum.dart';
 import '../../../../domain/controllers/chat_controller.dart';
 
 class BottomChatField extends ConsumerStatefulWidget {
   final String recieverUserId;
+  final bool isFromClientSide;
   // final bool isGroupChat;
   const BottomChatField({
     super.key,
     required this.recieverUserId,
+    this.isFromClientSide = false
     // required this.isGroupChat,
   });
 
@@ -45,15 +52,24 @@ class _BottomChatFieldState extends ConsumerState<BottomChatField> {
 
   void sendTextMessage() async {
     if (isShowSendButton && _messageController.text.isNotEmpty) {
-      ref.read(chatControllerProvider).sendTextMessage(
+      if (widget.isFromClientSide ) {
+        ref.read(clientChatControllerProvider).sendTextMessage(
             context,
             _messageController.text.trim(),
             widget.recieverUserId,
           );
+      } else {
+        ref.read(chatControllerProvider).sendTextMessage(
+            context,
+            _messageController.text.trim(),
+            widget.recieverUserId,
+          );
+      }
+      
       setState(() {
         _messageController.text = '';
       });
-    } 
+    }
     // else {
     //   var tempDir = await getTemporaryDirectory();
     //   var path = '${tempDir.path}/flutter_sound.aac';
@@ -67,7 +83,7 @@ class _BottomChatFieldState extends ConsumerState<BottomChatField> {
     //     await _soundRecorder!.startRecorder(
     //       toFile: path,
     //     );
-      }
+  }
 
   //     setState(() {
   //       isRecording = !isRecording;
@@ -76,23 +92,22 @@ class _BottomChatFieldState extends ConsumerState<BottomChatField> {
   // }
 
   void sendFileMessage(
-    // File file,
-    // MessageEnum messageEnum,
-  ) {
-    // ref.read(chatControllerProvider).sendFileMessage(
-    //       context,
-    //       file,
-    //       widget.recieverUserId,
-    //       messageEnum,
-    //       widget.isGroupChat,
-    //     );
+      File file,
+      MessageEnum messageEnum,
+      ) {
+    ref.read(chatControllerProvider).sendFileMessage(
+          context,
+          file,
+          widget.recieverUserId,
+          messageEnum,
+        );
   }
 
   void selectImage() async {
-    // File? image = await pickImageFromGallery(context);
-    // if (image != null) {
-    //   sendFileMessage(image, MessageEnum.image);
-    // }
+    File? image = await pickImageFromGallery(context);
+    if (image != null) {
+      sendFileMessage(image, MessageEnum.image);
+    }
   }
 
   void selectVideo() async {
@@ -101,7 +116,6 @@ class _BottomChatFieldState extends ConsumerState<BottomChatField> {
     //   sendFileMessage(video, MessageEnum.video);
     // }
   }
-
 
   void hideEmojiContainer() {
     setState(() {

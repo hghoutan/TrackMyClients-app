@@ -62,7 +62,5 @@ class AuthController {
     authRepository.setUserState(isOnline);
   }
 
-  void check() async {
-    authRepository.checkCompanyIfExist();
-  }
+ 
 }

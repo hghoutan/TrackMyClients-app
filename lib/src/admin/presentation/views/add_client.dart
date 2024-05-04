@@ -37,10 +37,10 @@ class _AddClientScreenState extends ConsumerState<AddClientScreen> {
       ClientData clientData = ClientData(
           name: nameController.text.trim(),
           email: emailController.text.trim(),
-          password: passwordController.text.trim(),
           phoneNumber: phoneController.text.trim());
       await ref.read(clientControllerProvider).saveClientDataToFirebase(
         context,
+        passwordController.text.trim(),
         clientData,
         image,
       );

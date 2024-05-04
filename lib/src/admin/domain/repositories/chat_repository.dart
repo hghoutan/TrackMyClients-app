@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -6,9 +8,10 @@ import 'package:trackmyclients_app/src/admin/domain/models/chat.dart';
 import 'package:trackmyclients_app/src/admin/domain/models/client.dart';
 import 'package:trackmyclients_app/src/admin/domain/models/user.dart';
 import 'package:uuid/uuid.dart';
-
 import '../../../utils/enums/message_enum.dart';
+import '../../../utils/utils.dart';
 import '../models/message.dart';
+import 'firebase_storage_repository.dart';
 
 final chatRepositoryProvider = Provider(
   (ref) => ChatRepository(
@@ -30,28 +33,32 @@ class ChatRepository {
         .orderBy('timeSent', descending: true)
         .snapshots()
         .asyncMap((event) async {
-      List<ChatContact> contacts = [];
-      for (var document in event.docs) {
-        var chatContact = ChatContact.fromMap(document.data());
-        var clientData = await firestore
-            .collection('users')
-            .doc(auth.currentUser!.uid)
-            .collection('clients')
-            .doc(chatContact.contactId)
-            .get();
-        var client = ClientData.fromMap(clientData.data()!);
+      try {
+        List<ChatContact> contacts = [];
+        for (var document in event.docs) {
+          var chatContact = ChatContact.fromMap(document.data());
+          var clientData = await firestore
+              .collection('users')
+              .doc(auth.currentUser!.uid)
+              .collection('clients')
+              .doc(chatContact.contactId)
+              .get();
+          var client = ClientData.fromMap(clientData.data()!);
 
-        contacts.add(
-          ChatContact(
-            name: client.name!,
-            profilePic: client.profilePic!,
-            contactId: chatContact.contactId,
-            timeSent: chatContact.timeSent,
-            lastMessage: chatContact.lastMessage,
-          ),
-        );
+          contacts.add(
+            ChatContact(
+              name: client.name!,
+              profilePic: client.profilePic!,
+              contactId: chatContact.contactId,
+              timeSent: chatContact.timeSent,
+              lastMessage: chatContact.lastMessage,
+            ),
+          );
+        }
+        return contacts;
+      } catch (e) {
+        return [];
       }
-      return contacts;
     });
   }
 
@@ -73,11 +80,12 @@ class ChatRepository {
     });
   }
 
-  void sendTextMessage(
-      {required BuildContext context,
-      required String message,
-      required String recieverUserId,
-      required UserData senderUser}) async {
+  void sendTextMessage({
+    required BuildContext context,
+    required String message,
+    required String recieverUserId,
+    required UserData senderUser,
+  }) async {
     try {
       DateTime timeSent = DateTime.now();
 
@@ -195,5 +203,66 @@ class ChatRepository {
         .set(
           message.toMap(),
         );
+  }
+  void sendFileMessage({
+    required BuildContext context,
+    required File file,
+    required String recieverUserId,
+    required UserData senderUserData,
+    required ProviderRef ref,
+    required MessageEnum messageEnum,
+  }) async {
+    try {
+      var timeSent = DateTime.now();
+      var messageId = const Uuid().v1();
+
+      String imageUrl = await ref
+          .read(firebaseStorageRepositoryProvider)
+          .storeFileToFirebase(
+            'chat/${messageEnum.type}/${senderUserData.id}/$recieverUserId/$messageId',
+            file,
+          );
+
+      ClientData? recieverClientData;
+      var clientDataMap =
+          await firestore.collection('users').doc(auth.currentUser!.uid).collection('clients').doc(recieverUserId).get();
+      recieverClientData = ClientData.fromMap(clientDataMap.data()!);
+      
+
+      String contactMsg;
+
+      switch (messageEnum) {
+        case MessageEnum.image:
+          contactMsg = '📷 Photo';
+          break;
+        case MessageEnum.video:
+          contactMsg = '📸 Video';
+          break;
+        case MessageEnum.audio:
+          contactMsg = '🎵 Audio';
+          break;
+        default:
+          contactMsg = 'GIF';
+      }
+      _saveDataToContactsSubcollection(
+        senderUserData,
+        recieverClientData,
+        contactMsg,
+        timeSent,
+        recieverUserId,
+      );
+
+      _saveMessageToMessageSubcollection(
+        recieverUserId: recieverUserId,
+        text: imageUrl,
+        timeSent: timeSent,
+        messageId: messageId,
+        username: '${senderUserData.firstName} ${senderUserData.lastName}' ,
+        messageType: messageEnum,
+        recieverUserName: recieverClientData.name,
+      );
+    } catch (e) {
+      showSnackBar(context: context, content: e.toString());
+    }
   }
 }

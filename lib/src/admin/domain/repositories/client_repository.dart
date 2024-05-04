@@ -2,13 +2,14 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:uuid/uuid.dart';
 
 import '../../../utils/utils.dart';
 import '../models/client.dart';
 import 'firebase_storage_repository.dart';
+import '../../../../main.dart';
 
 final clientRepositoryProvider = Provider(
   (ref) => ClientRepository(
@@ -16,6 +17,7 @@ final clientRepositoryProvider = Provider(
     firestore: FirebaseFirestore.instance,
   ),
 );
+
 final getClientsProvider = FutureProvider((ref) {
   final selectContactRepository = ref.watch(clientRepositoryProvider);
   return selectContactRepository.fetchAllClients();
@@ -31,36 +33,50 @@ class ClientRepository {
   });
 
   Future<void> saveClientDataToFirebase({
+    required String password,
     required ClientData client,
     required File? profilePic,
     required ProviderRef ref,
     required BuildContext context,
   }) async {
     try {
-      String uid = auth.currentUser!.uid;
+      // the current user
+      String currentUid = auth.currentUser!.uid;
+      FirebaseAuth secondAuth = FirebaseAuth.instanceFor(app: SecondaryAppProvider.of(context));
+
+      // the new user which is the client
+      final userCredential = await secondAuth.createUserWithEmailAndPassword(
+        email: client.email!,
+        password: password,
+      );
+
+      // the id of the client
+      String? clientId = userCredential.user?.uid;
+
       String photoUrl =
           'https://png.pngitem.com/pimgs/s/649-6490124_katie-notopoulos-katienotopoulos-i-write-about-tech-round.png';
 
-      var uuid = const Uuid().v4();
+      ClientData updatedClient = client.copyWith(
+        userId: clientId,
+        profilePic: photoUrl,
+        id: clientId,
+      );
+
       if (profilePic != null) {
         photoUrl = await ref
             .read(firebaseStorageRepositoryProvider)
             .storeFileToFirebase(
-              'profilePic/$uuid',
+              'profilePic/$clientId',
               profilePic,
             );
+        updatedClient = updatedClient.copyWith(profilePic: photoUrl);
       }
 
-      ClientData updatedClient = client.copyWith(
-        id: uuid,
-        userId: uid,
-        profilePic: photoUrl,
-      );
       await firestore
           .collection('users')
-          .doc(auth.currentUser!.uid)
+          .doc(currentUid)
           .collection('clients')
-          .doc(uuid)
+          .doc(clientId)
           .set(updatedClient.toMap());
     } catch (e) {
       showSnackBar(context: context, content: e.toString());

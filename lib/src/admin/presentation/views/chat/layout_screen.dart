@@ -41,6 +41,7 @@ class _LayoutScreenState extends ConsumerState<LayoutScreen>
         ref.read(authControllerProvider).setUserState(false);
         break;
       case AppLifecycleState.hidden:
+        ref.read(authControllerProvider).setUserState(false);
         break;
     }
   }

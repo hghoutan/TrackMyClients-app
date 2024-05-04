@@ -70,35 +70,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                                   ),
                           overflow: TextOverflow.ellipsis,
                         ),
-                        snapshot.data?.isOnline! == null
-                            ? Row(
-                                children: [
-                                  SizedBox(
-                                    height: 9,
-                                    width: 9,
-                                    child: CircleAvatar(
-                                      backgroundColor: Theme.of(context)
-                                          .colorScheme
-                                          .tertiary,
-                                      radius: 33,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 4),
-                                  Text(
-                                    'Online',
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .titleSmall!
-                                        .copyWith(
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .tertiary,
-                                          fontWeight: FontWeight.w400,
-                                        ),
-                                  ),
-                                ],
-                              )
-                            : snapshot.data!.isOnline!
+                        snapshot.data!.isOnline!
                                 ? Row(
                                     children: [
                                       SizedBox(

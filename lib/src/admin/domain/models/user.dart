@@ -10,6 +10,7 @@ class UserData {
   String? city;
   String? email;
   String? phone;
+  bool? isOnline;
   UserData({
     this.id,
     this.firstName,
@@ -19,6 +20,7 @@ class UserData {
     this.city,
     this.email,
     this.phone,
+    this.isOnline,
   });
 
   UserData copyWith({
@@ -30,6 +32,7 @@ class UserData {
     String? city,
     String? email,
     String? phone,
+    bool? isOnline,
   }) {
     return UserData(
       id: id ?? this.id,
@@ -40,6 +43,7 @@ class UserData {
       city: city ?? this.city,
       email: email ?? this.email,
       phone: phone ?? this.phone,
+      isOnline: isOnline ?? this.isOnline,
     );
   }
 
@@ -53,6 +57,7 @@ class UserData {
       'city': city,
       'email': email,
       'phone': phone,
+      'isOnline': isOnline,
     };
   }
 
@@ -66,21 +71,23 @@ class UserData {
       city: map['city'] != null ? map['city'] as String : null,
       email: map['email'] != null ? map['email'] as String : null,
       phone: map['phone'] != null ? map['phone'] as String : null,
+      isOnline: map['isOnline'] != null ? map['isOnline'] as bool : null,
     );
   }
 
   String toJson() => json.encode(toMap());
 
   bool isValid() {
-    return [id,firstName, lastName, birthdayYear, gender, city, email, phone]
+    return [id, firstName, lastName, birthdayYear, gender, city, email, phone]
         .every((element) => element != null && element.isNotEmpty);
   }
+
   factory UserData.fromJson(String source) =>
       UserData.fromMap(json.decode(source) as Map<String, dynamic>);
 
   @override
   String toString() {
-    return 'UserData(id: $id, firstName: $firstName, lastName: $lastName, birthdayYear: $birthdayYear, gender: $gender, city: $city, email: $email, phone: $phone)';
+    return 'UserData(id: $id, firstName: $firstName, lastName: $lastName, birthdayYear: $birthdayYear, gender: $gender, city: $city, email: $email, phone: $phone, isOnline: $isOnline)';
   }
 
   @override
@@ -95,7 +102,8 @@ class UserData {
       other.gender == gender &&
       other.city == city &&
       other.email == email &&
-      other.phone == phone;
+      other.phone == phone &&
+      other.isOnline == isOnline;
   }
 
   @override
@@ -107,6 +115,7 @@ class UserData {
       gender.hashCode ^
       city.hashCode ^
       email.hashCode ^
-      phone.hashCode;
+      phone.hashCode ^
+      isOnline.hashCode;
   }
 }

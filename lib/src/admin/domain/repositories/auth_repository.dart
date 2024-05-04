@@ -182,13 +182,5 @@ class AuthRepository {
     });
   }
 
-  void checkCompanyIfExist() async {
-    var userData = await firestore
-        .collection('users')
-        .doc('v9THjZEcSVPD5cpsUezpiWZ6qCh1')
-        .collection('clients')
-        .doc('8390649f-77a5-4f58-ae81-0243ebb6155d')
-        .get();
-    print(userData.data());
-  }
+  
 }

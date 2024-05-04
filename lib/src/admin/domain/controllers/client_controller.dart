@@ -22,8 +22,9 @@ class ClientController {
   });
   
    Future<void> saveClientDataToFirebase(
-      BuildContext context, ClientData clientData, File? profilePic) async {
+      BuildContext context,String password ,ClientData clientData, File? profilePic) async {
       await authRepository.saveClientDataToFirebase(
+        password: password,
         client: clientData,
         profilePic: profilePic,
         ref: ref,

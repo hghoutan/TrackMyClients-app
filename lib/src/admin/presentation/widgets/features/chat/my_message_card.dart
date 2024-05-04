@@ -1,10 +1,18 @@
 import 'package:flutter/material.dart';
 
+import '../../../../../utils/enums/message_enum.dart';
+import 'display_text_image.dart';
+
 class MyMessageCard extends StatelessWidget {
   final String message;
   final String date;
+  final MessageEnum type;
 
-  const MyMessageCard({super.key, required this.message, required this.date});
+  const MyMessageCard(
+      {super.key,
+      required this.message,
+      required this.date,
+      required this.type});
 
   @override
   Widget build(BuildContext context) {
@@ -12,9 +20,7 @@ class MyMessageCard extends StatelessWidget {
       alignment: Alignment.centerRight,
       child: ConstrainedBox(
         constraints: BoxConstraints(
-          maxWidth: MediaQuery.of(context).size.width - 45,
-          minWidth: 110
-        ),
+            maxWidth: MediaQuery.of(context).size.width - 45, minWidth: 110),
         child: Card(
           elevation: 1,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
@@ -29,13 +35,10 @@ class MyMessageCard extends StatelessWidget {
                   top: 5,
                   bottom: 20,
                 ),
-                child: Text(
-                  message,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    color: Colors.white
-                  ),
-                ),
+                child: DisplayTextImage(
+                            message: message,
+                            type: type,
+                          ),
               ),
               Positioned(
                 bottom: 4,
@@ -44,7 +47,7 @@ class MyMessageCard extends StatelessWidget {
                   children: [
                     Text(
                       date,
-                      style:const TextStyle(
+                      style: const TextStyle(
                         fontSize: 13,
                         color: Colors.white60,
                       ),
