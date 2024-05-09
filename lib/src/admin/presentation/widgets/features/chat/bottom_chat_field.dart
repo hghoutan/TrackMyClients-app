@@ -17,8 +17,7 @@ class BottomChatField extends ConsumerStatefulWidget {
   final String recieverUserId;
   final bool isFromClientSide;
   const BottomChatField(
-      {super.key, required this.recieverUserId, this.isFromClientSide = false
-      });
+      {super.key, required this.recieverUserId, this.isFromClientSide = false});
 
   @override
   ConsumerState<BottomChatField> createState() => _BottomChatFieldState();
@@ -68,8 +67,7 @@ class _BottomChatFieldState extends ConsumerState<BottomChatField> {
       setState(() {
         _messageController.text = '';
       });
-    }
-    else {
+    } else {
       var tempDir = await getTemporaryDirectory();
       var path = '${tempDir.path}/flutter_sound.aac';
       if (!isRecorderInit) {
@@ -77,7 +75,6 @@ class _BottomChatFieldState extends ConsumerState<BottomChatField> {
       }
       if (isRecording) {
         await _soundRecorder!.stopRecorder();
-        sendFileMessage(File(path), MessageEnum.audio);
       } else {
         await _soundRecorder!.startRecorder(
           toFile: path,
@@ -96,21 +93,19 @@ class _BottomChatFieldState extends ConsumerState<BottomChatField> {
   ) {
     if (widget.isFromClientSide) {
       ref.read(clientChatControllerProvider).sendFileMessage(
-          context,
-          file,
-          widget.recieverUserId,
-          messageEnum,
-        );
-    }
-    else{
+            context,
+            file,
+            widget.recieverUserId,
+            messageEnum,
+          );
+    } else {
       ref.read(chatControllerProvider).sendFileMessage(
-        context,
-        file,
-        widget.recieverUserId,
-        messageEnum,
-      );
+            context,
+            file,
+            widget.recieverUserId,
+            messageEnum,
+          );
     }
-    
   }
 
   void selectImage() async {
@@ -270,7 +265,6 @@ class _BottomChatFieldState extends ConsumerState<BottomChatField> {
                       });
                     }
                   }),
-
                 ),
               )
             : const SizedBox(),

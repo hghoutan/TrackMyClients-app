@@ -46,12 +46,12 @@ dependencies:
   font_awesome_flutter: ^10.7.0
   flutter_svg: ^2.0.10+1
   slide_switcher: ^1.1.2
-  image_picker: ^1.1.0
+  image_picker: ^0.8.9
   flutter_riverpod: ^2.5.1
   uuid: ^4.4.0
   emoji_picker_flutter: ^2.1.1
   interpolate_animated: ^0.0.1
-  intl: ^0.19.0
+  intl: ^0.18.1
   shared_preferences: ^2.2.3
   cached_network_image: ^3.3.1
   video_player: ^2.8.6
@@ -60,6 +60,9 @@ dependencies:
   permission_handler: ^11.3.1
   path_provider: ^2.1.3
   audioplayers: ^6.0.0
+  agora_uikit: ^1.3.7
+  flutter_quill: ^9.0.0
+  
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -69,7 +72,6 @@ dev_dependencies:
   # activated in the `analysis_options.yaml` file located at the root of your
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
-  flutter_lints: ^3.0.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

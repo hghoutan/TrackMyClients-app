@@ -6,7 +6,7 @@ import 'package:trackmyclients_app/src/admin/domain/models/user.dart';
 
 import '../repositories/auth_repository.dart';
 
-final authControllerProvider = Provider((ref) {
+final authControllerProvider = ChangeNotifierProvider((ref) {
   final authRepository = ref.watch(authRepositoryProvider);
   return AuthController(authRepository: authRepository, ref: ref);
 });
@@ -16,9 +16,9 @@ final userDataAuthProvider = FutureProvider((ref) {
   return authController.getUserData();
 });
 
-class AuthController {
+class AuthController with ChangeNotifier {
   final AuthRepository authRepository;
-  final ProviderRef ref;
+  final ChangeNotifierProviderRef<Object?> ref;
   AuthController({
     required this.authRepository,
     required this.ref,
@@ -62,5 +62,8 @@ class AuthController {
     authRepository.setUserState(isOnline);
   }
 
- 
+  Future<void> signOut() async {
+    await authRepository.signOut();
+    // notifyListeners();
+  }
 }

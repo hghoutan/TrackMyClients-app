@@ -9,14 +9,14 @@ import 'package:trackmyclients_app/src/admin/presentation/views/auth/admin_login
 import 'package:trackmyclients_app/src/admin/presentation/views/home.dart';
 import 'package:trackmyclients_app/src/utils/functions/next_screen.dart';
 
-final authRepositoryProvider = Provider(
+final authRepositoryProvider = ChangeNotifierProvider(
   (ref) => AuthRepository(
     auth: FirebaseAuth.instance,
     firestore: FirebaseFirestore.instance,
   ),
 );
 
-class AuthRepository {
+class AuthRepository  extends ChangeNotifier {
   final FirebaseAuth auth;
   final FirebaseFirestore firestore;
   AuthRepository({
@@ -180,6 +180,11 @@ class AuthRepository {
       'isOnline': isOnline,
     });
   }
+  Future<void> signOut() async {
+    await auth.signOut();
+    notifyListeners();
+  }
+
 
   
 }

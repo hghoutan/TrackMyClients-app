@@ -8,7 +8,9 @@ class CustomDropdownInput extends StatefulWidget {
     required this.icon,
     required this.onChanged,
     required this.validator,
-    super.key,
+    this.fillColor,
+    super.key, 
+    
   });
 
   final String hint;
@@ -17,22 +19,26 @@ class CustomDropdownInput extends StatefulWidget {
   final Icon? icon;
   final ValueChanged<String?>? onChanged;
   final FormFieldValidator<String?>? validator;
+  final Color? fillColor;
 
   @override
   State<CustomDropdownInput> createState() => _CustomDropdownInputState();
 }
 
 class _CustomDropdownInputState extends State<CustomDropdownInput> {
-
   @override
   Widget build(BuildContext context) {
     return DropdownButtonFormField<String>(
+      
       isExpanded: true,
       icon: const Visibility(
         visible: false,
         child: Icon(Icons.arrow_downward),
       ),
       decoration: InputDecoration(
+        filled: widget.fillColor != null,
+        fillColor: widget.fillColor,
+        
         enabledBorder: OutlineInputBorder(
           borderSide: const BorderSide(color: Color(0xffd2d2d7)),
           borderRadius: BorderRadius.circular(8.0),
@@ -55,7 +61,8 @@ class _CustomDropdownInputState extends State<CustomDropdownInput> {
             .textTheme
             .titleMedium!
             .copyWith(color: const Color(0xff1a1c1c)),
-        contentPadding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 18.0),
+        contentPadding:
+            const EdgeInsets.symmetric(vertical: 20.0, horizontal: 18.0),
       ),
       items: widget.dropdownItems
           .map((item) => DropdownMenuItem<String>(
@@ -69,7 +76,6 @@ class _CustomDropdownInputState extends State<CustomDropdownInput> {
       onChanged: widget.onChanged,
       isDense: true,
       validator: widget.validator,
-      
     );
   }
 }

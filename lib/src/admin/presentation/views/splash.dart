@@ -1,7 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:trackmyclients_app/src/admin/domain/controllers/auth_controller.dart';
+import 'package:trackmyclients_app/src/admin/domain/models/user.dart';
 import 'package:trackmyclients_app/src/admin/presentation/views/auth/admin_login.dart';
 import 'package:trackmyclients_app/src/admin/presentation/views/main_screen.dart';
 
@@ -41,12 +43,14 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   }
 
   Future<void> _gotoWelcomePage() async {
-    final user = await ref.watch(authControllerProvider).getUserData();
-    nextScreenReplaceAnimation(
-      context,
-      user != null ? const MainScreen() : const AdminLoginScreen(),
-    );
-}
+      UserData? user = await ref.watch(authControllerProvider).getUserData();
+      setState(() {
+        nextScreenReplaceAnimation(
+          context,
+          user != null ? const MainScreen() : const AdminLoginScreen(),
+        );
+      });
+  }
 
   @override
   Widget build(BuildContext context) {
