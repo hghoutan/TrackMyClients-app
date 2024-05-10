@@ -1,14 +1,13 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-
-import '../../../utils/images.dart';
+import '../../domain/models/chat.dart';
 
 class HomeMessageContainer extends StatelessWidget {
+  final ChatContact chat;
+  final String timeSent;
   final bool active;
-  const HomeMessageContainer({
-    required this.active,
-    super.key
-  });
+  const HomeMessageContainer(
+      {required this.active, required this.chat, super.key, required this.timeSent});
 
   @override
   Widget build(BuildContext context) {
@@ -30,8 +29,8 @@ class HomeMessageContainer extends StatelessWidget {
               decoration: const BoxDecoration(
                 shape: BoxShape.circle,
               ),
-              child: Image.asset(
-                Images.client,
+              child: CachedNetworkImage(
+                imageUrl: chat.profilePic,
                 width: 40,
                 height: 40,
                 fit: BoxFit.cover,
@@ -49,14 +48,14 @@ class HomeMessageContainer extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        'Client: Elena Cruz',
+                        'Client: ${chat.name}',
                         style: Theme.of(context).textTheme.titleSmall!.copyWith(
                               color: Colors.black,
                               fontWeight: FontWeight.w400,
                             ),
                       ),
                       Text(
-                        'Just now',
+                        timeSent,
                         style: Theme.of(context).textTheme.titleSmall!.copyWith(
                               fontSize: 12,
                               color: Colors.black,
@@ -70,22 +69,28 @@ class HomeMessageContainer extends StatelessWidget {
                     children: [
                       Flexible(
                         child: Text(
-                          'You owe me money! Respond now.',
-                          style: Theme.of(context).textTheme.titleSmall!.copyWith(
+                          chat.lastMessage,
+                          style: Theme.of(context)
+                              .textTheme
+                              .titleSmall!
+                              .copyWith(
                                 color: Colors.black,
-                                fontWeight: active ? FontWeight.w700 : FontWeight.w400,
+                                fontWeight:
+                                    active ? FontWeight.w700 : FontWeight.w400,
                               ),
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
-                      active ? Container(
-                        height: 10,
-                        width: 10,
-                        padding: const EdgeInsets.only(left: 4.0),
-                        decoration: BoxDecoration(
-                            color: Theme.of(context).colorScheme.primary,
-                            shape: BoxShape.circle),
-                      ) : const SizedBox()
+                      active
+                          ? Container(
+                              height: 10,
+                              width: 10,
+                              padding: const EdgeInsets.only(left: 4.0),
+                              decoration: BoxDecoration(
+                                  color: Theme.of(context).colorScheme.primary,
+                                  shape: BoxShape.circle),
+                            )
+                          : const SizedBox()
                     ],
                   ),
                 ],
