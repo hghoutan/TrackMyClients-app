@@ -1,27 +1,31 @@
-
 import 'package:flutter/material.dart';
+
 import 'package:flutter_quill/flutter_quill.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
-import 'package:trackmyclients_app/src/admin/presentation/widgets/custom_drop_down.dart';
+import 'package:trackmyclients_app/src/admin/domain/controllers/client_controller.dart';
+import 'package:trackmyclients_app/src/admin/domain/models/client.dart';
 import 'package:trackmyclients_app/src/admin/presentation/widgets/main_button.dart';
+import 'package:trackmyclients_app/src/client/domain/controllers/client_auth_controller.dart';
+import 'package:trackmyclients_app/src/client/domain/controllers/client_chat_controller.dart';
 import 'package:trackmyclients_app/src/utils/functions/date_picker.dart';
 
-
-class ScheduleMessageScreen extends StatefulWidget {
+class ScheduleMessageScreen extends ConsumerStatefulWidget {
   const ScheduleMessageScreen({super.key});
 
   @override
-  State<ScheduleMessageScreen> createState() => _ScheduleMessageScreenState();
+  ConsumerState<ScheduleMessageScreen> createState() =>
+      _ScheduleMessageScreenState();
 }
 
-class _ScheduleMessageScreenState extends State<ScheduleMessageScreen> {
-  String? selectedClient;
-  String? selectedPlatform;
+class _ScheduleMessageScreenState extends ConsumerState<ScheduleMessageScreen> {
+  ClientData? selectedClient;
   List<DateTime> scheduledDates = [];
-  int count = 0;
+  bool emailSelected = false;
+  bool smsSelected = false;
+  bool whatsAppSelected = false;
   QuillController _controller = QuillController.basic();
-  
 
   void addDate(DateTime dateTime) {
     scheduledDates.add(dateTime);
@@ -34,7 +38,7 @@ class _ScheduleMessageScreenState extends State<ScheduleMessageScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {    
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text("Schedule message"),
@@ -72,43 +76,75 @@ class _ScheduleMessageScreenState extends State<ScheduleMessageScreen> {
                       children: [
                         SizedBox(
                           height: 50,
-                          child: CustomDropdownInput(
-                            fillColor: Color(0xfff4f4f4),
-                            fromAuth: false,
-                            hint: 'Choose your client',
-                            value: selectedClient,
-                            dropdownItems: const ['test', 'apple'],
-                            icon: const Icon(
-                              Icons.keyboard_arrow_down,
-                              color: Color(0xff717171),
-                              size: 32,
-                            ),
-                            onChanged: (value) {},
-                            validator: (value) {
-                              return null;
-                            },
-                          ),
+                          child: StreamBuilder<List<ClientData>>(
+                              stream: ref
+                                  .read(clientControllerProvider)
+                                  .fetchAllClients(),
+                              builder: (context, snapshot) {
+                                if (snapshot.hasData) {
+                                  final clients = snapshot.data;
+                                  return _DropDownWidget(clients);
+                                }
+                                return SizedBox();
+                              }),
                         ),
                         SizedBox(height: 14),
-                        SizedBox(
-                          height: 50,
-                          child: CustomDropdownInput(
-                            fillColor: Color(0xfff4f4f4),
-                            fromAuth: false,
-                            hint: 'Select platform',
-                            value: selectedPlatform,
-                            dropdownItems: const ['Email', 'WhatsApp', 'Sms'],
-                            icon: const Icon(
-                              Icons.keyboard_arrow_down,
-                              color: Color(0xff717171),
-                              size: 32,
-                            ),
-                            onChanged: (value) {},
-                            validator: (value) {
-                              return null;
-                            },
-                          ),
+                        Text(
+                          "Select Service",
+                          style: Theme.of(context)
+                              .textTheme
+                              .titleMedium!
+                              .copyWith(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 16),
                         ),
+                        SizedBox(height: 8),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Wrap(
+                                crossAxisAlignment: WrapCrossAlignment.center,
+                                children: [
+                                  Checkbox(
+                                    value: emailSelected,
+                                    onChanged: (value) {
+                                      setState(() {
+                                        emailSelected = value!;
+                                      });
+                                    },
+                                  ),
+                                  Text("Email")
+                                ]),
+                            Wrap(
+                                crossAxisAlignment: WrapCrossAlignment.center,
+                                children: [
+                                  Checkbox(
+                                    value: smsSelected,
+                                    onChanged: (value) {
+                                      setState(() {
+                                        smsSelected = value!;
+                                      });
+                                    },
+                                  ),
+                                  Text("SMS")
+                                ]),
+                            Wrap(
+                                crossAxisAlignment: WrapCrossAlignment.center,
+                                children: [
+                                  Checkbox(
+                                    value: whatsAppSelected,
+                                    onChanged: (value) {
+                                      setState(() {
+                                        whatsAppSelected = value!;
+                                      });
+                                    },
+                                  ),
+                                  Text("WhatsApp")
+                                ]),
+                          ],
+                        )
+                       
                       ],
                     ),
                   ),
@@ -202,7 +238,7 @@ class _ScheduleMessageScreenState extends State<ScheduleMessageScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text("To: HIcham Ghoutani"),
+                        selectedClient != null ? Text("To: ${selectedClient!.name}") : SizedBox(),
                         SizedBox(height: 20),
                         Container(
                           decoration: BoxDecoration(
@@ -213,80 +249,80 @@ class _ScheduleMessageScreenState extends State<ScheduleMessageScreen> {
                           child: Column(
                             children: [
                               QuillEditor.basic(
-                                 configurations: QuillEditorConfigurations(
-                                  controller: _controller,
-                                  maxHeight: 100,
-                                  autoFocus: true,
-                                  padding: EdgeInsets.symmetric(vertical: 12),
-                                  placeholder: "Type Message...",
-                                  customStyles: DefaultStyles(
-                                    placeHolder: DefaultTextBlockStyle(
-                                      Theme.of(context)
-                                        .textTheme
-                                        .titleMedium!
-                                        .copyWith(color: const Color(0xff717171)),
-                                        VerticalSpacing(0, 0),
-                                        VerticalSpacing(0, 0),
-                                        null                                      
-                                    )
-                                  )
-                                 ),
+                                configurations: QuillEditorConfigurations(
+                                    controller: _controller,
+                                    maxHeight: 100,
+                                    autoFocus: true,
+                                    padding: EdgeInsets.symmetric(vertical: 12),
+                                    placeholder: "Type Message...",
+                                    customStyles: DefaultStyles(
+                                        placeHolder: DefaultTextBlockStyle(
+                                            Theme.of(context)
+                                                .textTheme
+                                                .titleMedium!
+                                                .copyWith(
+                                                    color: const Color(
+                                                        0xff717171)),
+                                            VerticalSpacing(0, 0),
+                                            VerticalSpacing(0, 0),
+                                            null))),
                               ),
-                              
-                             
                               Container(
                                 width: double.infinity,
                                 decoration: BoxDecoration(
-                                   borderRadius: BorderRadius.circular(8.0),
-                                    border: Border.all(color: Colors.black26)
-                                ),
+                                    borderRadius: BorderRadius.circular(8.0),
+                                    border: Border.all(color: Colors.black26)),
                                 child: QuillToolbar.simple(
-                                configurations: QuillSimpleToolbarConfigurations(
-                                  controller: _controller,
-                                  buttonOptions: QuillSimpleToolbarButtonOptions(
-                                    italic: QuillToolbarToggleStyleButtonOptions(
-                                      iconData: FontAwesomeIcons.italic,
-                                      iconSize: 12
-                                    ),
-                                    bold: QuillToolbarToggleStyleButtonOptions(
-                                      iconData: FontAwesomeIcons.bold,
-                                      iconSize: 12,
-                                    )
+                                  configurations:
+                                      QuillSimpleToolbarConfigurations(
+                                    controller: _controller,
+                                    buttonOptions:
+                                        QuillSimpleToolbarButtonOptions(
+                                            italic:
+                                                QuillToolbarToggleStyleButtonOptions(
+                                                    iconData:
+                                                        FontAwesomeIcons.italic,
+                                                    iconSize: 12),
+                                            bold:
+                                                QuillToolbarToggleStyleButtonOptions(
+                                              iconData: FontAwesomeIcons.bold,
+                                              iconSize: 12,
+                                            )),
+                                    axis: Axis.horizontal,
+                                    toolbarSectionSpacing: 0,
+                                    showBoldButton: true,
+                                    showBackgroundColorButton: false,
+                                    showAlignmentButtons: true,
+                                    showCenterAlignment: true,
+                                    showClearFormat: false,
+                                    showSuperscript: false,
+                                    showSubscript: false,
+                                    showColorButton: false,
+                                    showClipboardCut: false,
+                                    showCodeBlock: false,
+                                    showDirection: false,
+                                    showClipboardPaste: false,
+                                    showClipboardCopy: false,
+                                    showDividers: false,
+                                    showFontFamily: false,
+                                    showIndent: false,
+                                    showLink: false,
+                                    showFontSize: false,
+                                    showHeaderStyle: false,
+                                    showInlineCode: false,
+                                    showQuote: false,
+                                    showListBullets: false,
+                                    showListCheck: false,
+                                    showListNumbers: false,
+                                    showSearchButton: false,
+                                    showSmallButton: false,
+                                    showStrikeThrough: true,
                                   ),
-                                  axis: Axis.horizontal,
-                                  toolbarSectionSpacing: 0,
-                                  showBoldButton: true,
-                                  showBackgroundColorButton: false,
-                                  showAlignmentButtons: true,
-                                  showCenterAlignment: true,
-                                  showClearFormat: false,
-                                  showSuperscript: false,
-                                  showSubscript: false,
-                                  showColorButton: false,
-                                  showClipboardCut: false,
-                                  showCodeBlock: false,
-                                  showDirection: false,
-                                  showClipboardPaste: false,
-                                  showClipboardCopy: false,
-                                  showDividers: false,
-                                  showFontFamily: false,
-                                  showIndent: false,
-                                  showLink: false,
-                                  showFontSize: false,
-                                  showHeaderStyle: false,
-                                  showInlineCode: false,
-                                  showQuote: false,
-                                  showListBullets: false,
-                                  showListCheck: false,
-                                  showListNumbers: false,
-                                  showSearchButton: false,
-                                  showSmallButton: false,
-                                  showStrikeThrough: true,
-                                  
                                 ),
                               ),
-                              ),
-                              SizedBox(height: 12,)
+                              SizedBox(
+                                height: 12,
+                              )
                             ],
                           ),
                         )
@@ -295,11 +331,10 @@ class _ScheduleMessageScreenState extends State<ScheduleMessageScreen> {
                   ),
                   SizedBox(height: 20),
                   MainButtonWidget(
-                    text: "Send message",
-                    backgroundColor:  Theme.of(context).colorScheme.primary,
-                    style: Theme.of(context).textTheme.titleMedium!,
-                    onPressed: (){}
-                  ),
+                      text: "Confirm & Schedule message",
+                      backgroundColor: Theme.of(context).colorScheme.primary,
+                      style: Theme.of(context).textTheme.titleMedium!,
+                      onPressed: () {}),
                   SizedBox(height: 24)
                 ],
               ),
@@ -307,6 +342,49 @@ class _ScheduleMessageScreenState extends State<ScheduleMessageScreen> {
           ),
         );
       }),
+    );
+  }
+
+  Widget _DropDownWidget(List<ClientData>? clients) {
+    return DropdownButtonFormField<ClientData?>(
+      icon: SizedBox(),
+      menuMaxHeight: 250,
+      borderRadius: BorderRadius.circular(8),
+      decoration: InputDecoration(
+        filled: true,
+        fillColor: Color(0xfff4f4f4),
+        border: OutlineInputBorder(
+          borderSide: const BorderSide(color: Color(0xffEFEFEF)),
+          borderRadius: BorderRadius.circular(8.0),
+        ),
+        suffixIcon: const Icon(
+          Icons.keyboard_arrow_down,
+          color: Color(0xff717171),
+          size: 32,
+        ),
+        hintText: "Choose your client",
+        hintStyle: Theme.of(context)
+            .textTheme
+            .titleMedium!
+            .copyWith(color: const Color(0xff717171)),
+        contentPadding: EdgeInsets.symmetric(horizontal: 18.0),
+      ),
+      items: clients!
+          .map((client) => DropdownMenuItem(
+                value: client,
+                child: Text(
+                  client.name!,
+                  style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                    color: Colors.black
+                  ),
+                ),
+              ))
+          .toList(),
+      onChanged: (value) {
+        setState(() {
+          selectedClient = value;
+        });
+      },
     );
   }
 }

@@ -1098,6 +1098,8 @@ PODS:
   - Flutter (1.0.0)
   - flutter_keyboard_visibility (0.0.1):
     - Flutter
+  - flutter_local_notifications (0.0.1):
+    - Flutter
   - flutter_sound (9.4.6):
     - Flutter
     - flutter_sound_core (= 9.4.6)
@@ -1276,6 +1278,7 @@ DEPENDENCIES:
   - firebase_storage (from `.symlinks/plugins/firebase_storage/ios`)
   - Flutter (from `Flutter`)
   - flutter_keyboard_visibility (from `.symlinks/plugins/flutter_keyboard_visibility/ios`)
+  - flutter_local_notifications (from `.symlinks/plugins/flutter_local_notifications/ios`)
   - flutter_sound (from `.symlinks/plugins/flutter_sound/ios`)
   - google_sign_in_ios (from `.symlinks/plugins/google_sign_in_ios/darwin`)
   - image_picker_ios (from `.symlinks/plugins/image_picker_ios/ios`)
@@ -1351,6 +1354,8 @@ EXTERNAL SOURCES:
     :path: Flutter
   flutter_keyboard_visibility:
     :path: ".symlinks/plugins/flutter_keyboard_visibility/ios"
+  flutter_local_notifications:
+    :path: ".symlinks/plugins/flutter_local_notifications/ios"
   flutter_sound:
     :path: ".symlinks/plugins/flutter_sound/ios"
   google_sign_in_ios:
@@ -1411,6 +1416,7 @@ SPEC CHECKSUMS:
   FirebaseStorage: 03710f9a0e3824d3069ed1128601a3d3a5e7d817
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
   flutter_keyboard_visibility: 0339d06371254c3eb25eeb90ba8d17dca8f9c069
+  flutter_local_notifications: 4cde75091f6327eb8517fa068a0a5950212d2086
   flutter_sound: d1ed7b8bac3c4513ac5ef8b90c15f3a6b860291b
   flutter_sound_core: 46f6f56752a209dcc72be9f09b71c8b626f70d49
   google_sign_in_ios: 07375bfbf2620bc93a602c0e27160d6afc6ead38

@@ -14,7 +14,7 @@ class CustomDropdownInput extends StatefulWidget {
   });
 
   final String hint;
-  final String? value;
+  final Object? value;
   final List<String> dropdownItems;
   final Icon? icon;
   final ValueChanged<String?>? onChanged;

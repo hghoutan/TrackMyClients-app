@@ -5,6 +5,8 @@ import 'package:trackmyclients_app/src/admin/presentation/views/chat/select_clie
 import 'package:trackmyclients_app/src/utils/functions/next_screen.dart';
 
 import '../../../domain/controllers/auth_controller.dart';
+import '../../../domain/controllers/chat_controller.dart';
+import '../../../domain/models/chat.dart';
 import '../../widgets/features/chat/contacts_list.dart';
 
 class LayoutScreen extends ConsumerStatefulWidget {
@@ -17,11 +19,31 @@ class LayoutScreen extends ConsumerStatefulWidget {
 class _LayoutScreenState extends ConsumerState<LayoutScreen>
     with WidgetsBindingObserver {
   TextEditingController searchController = TextEditingController();
+  List<ChatContact> contacts = [];
+
+  Future<void> getChatContacts() async {
+    contacts = await ref.read(chatControllerProvider).chatContacts().first;
+    setState(() {});
+  }
+
+  searchContact(String value) async {
+    getChatContacts();
+    if (!value.isEmpty) {
+      contacts = contacts
+          .where((contact) =>
+              contact.name.toLowerCase().contains(value.toLowerCase()) ||
+              contact.lastMessage.toLowerCase().contains(value.toLowerCase()))
+          .toList();
+
+      setState(() {});
+    }
+  }
 
   @override
   void initState() {
-    WidgetsBinding.instance.addObserver(this);
     super.initState();
+    getChatContacts();
+    WidgetsBinding.instance.addObserver(this);
   }
 
   @override
@@ -33,19 +55,9 @@ class _LayoutScreenState extends ConsumerState<LayoutScreen>
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
-    switch (state) {
-      case AppLifecycleState.resumed:
-        ref.read(authControllerProvider).setUserState(true);
-        break;
-      case AppLifecycleState.inactive:
-      case AppLifecycleState.detached:
-      case AppLifecycleState.paused:
-        ref.read(authControllerProvider).setUserState(false);
-        break;
-      case AppLifecycleState.hidden:
-        ref.read(authControllerProvider).setUserState(false);
-        break;
-    }
+    ref
+        .read(authControllerProvider)
+        .setUserState(state == AppLifecycleState.resumed);
   }
 
   @override
@@ -96,6 +108,7 @@ class _LayoutScreenState extends ConsumerState<LayoutScreen>
                         ),
                         validator: (value) {},
                         style: Theme.of(context).textTheme.titleMedium,
+                        onChanged: searchContact,
                         onTapOutside: (event) {
                           FocusScope.of(context).unfocus();
                         },
@@ -122,7 +135,7 @@ class _LayoutScreenState extends ConsumerState<LayoutScreen>
               ),
             ),
             const SizedBox(height: 24.0),
-            const ContactsList()
+            ContactsList(contacts: contacts)
           ],
         ),
       ),

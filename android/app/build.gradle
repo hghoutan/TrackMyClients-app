@@ -1,5 +1,3 @@
-// android/build.gradle
-
 allprojects {
     repositories {
         maven { url 'https://jitpack.io' }
@@ -15,7 +13,7 @@ plugins {
 
 android {
     namespace "com.ghoutani.trackmyclients_app"
-    compileSdk 31
+    compileSdk 34
     ndkVersion flutter.ndkVersion
 
     compileOptions {
