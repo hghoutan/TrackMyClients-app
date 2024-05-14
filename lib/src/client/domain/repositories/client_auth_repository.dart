@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:trackmyclients_app/src/admin/domain/models/client.dart';
+import 'package:trackmyclients_app/src/admin/domain/repositories/firebase_notification_repository.dart';
 
 final clientAuthRepositoryProvider = Provider(
   (ref) => ClientAuthRepository(
@@ -23,6 +24,7 @@ class ClientAuthRepository {
   Future<bool> signInWithEmailAndPassword(
       String aui, String email, String password) async {
     try {
+      final notificationService = NotificationsService();
       SharedPreferences prefs = await SharedPreferences.getInstance();
 
       final customUserRef = firestore
@@ -40,6 +42,7 @@ class ClientAuthRepository {
 
         // save admin uid for using it later
         prefs.setString('adminUid', aui);
+        notificationService.getToken(aui: aui);
         // Verify the custom user's password
         // final storedPassword = customUser.docs;
         // if (storedPassword!= password) {

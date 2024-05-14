@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:trackmyclients_app/src/admin/domain/repositories/firebase_notification_repository.dart';
 import 'package:trackmyclients_app/src/admin/presentation/widgets/main_button.dart';
 import 'package:trackmyclients_app/src/admin/presentation/widgets/text_input.dart';
 import 'package:trackmyclients_app/src/client/domain/controllers/client_auth_controller.dart';
@@ -16,6 +17,7 @@ class ClientLoginScreen extends ConsumerStatefulWidget {
 class _ClientLoginScreenState extends ConsumerState<ClientLoginScreen> {
   @override
   Widget build(BuildContext context) {
+    final notificationService = NotificationsService();
     TextEditingController cIDController = TextEditingController();
     TextEditingController emailController = TextEditingController();
     TextEditingController passwordController = TextEditingController();
@@ -54,7 +56,10 @@ class _ClientLoginScreenState extends ConsumerState<ClientLoginScreen> {
                       .signInWithEmailAndPassword(cIDController.text,
                           emailController.text, passwordController.text);
                   if (isUser) {
-                    nextScreenAnimation(context, ClientChatScreen(id :cIDController.text));
+                    notificationService.requestPermission();
+                    
+                    nextScreenAnimation(
+                        context, ClientChatScreen(id: cIDController.text));
                   }
                 })
           ],

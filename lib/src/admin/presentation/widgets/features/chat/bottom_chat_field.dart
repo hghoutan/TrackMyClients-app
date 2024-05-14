@@ -12,6 +12,7 @@ import 'package:trackmyclients_app/src/utils/utils.dart';
 
 import '../../../../../utils/enums/message_enum.dart';
 import '../../../../domain/controllers/chat_controller.dart';
+import '../../../../domain/repositories/firebase_notification_repository.dart';
 
 class BottomChatField extends ConsumerStatefulWidget {
   final String recieverUserId;
@@ -24,8 +25,10 @@ class BottomChatField extends ConsumerStatefulWidget {
 }
 
 class _BottomChatFieldState extends ConsumerState<BottomChatField> {
-  bool isShowSendButton = false;
   final TextEditingController _messageController = TextEditingController();
+  final notificationsService = NotificationsService();
+
+  bool isShowSendButton = false;
   FlutterSoundRecorder? _soundRecorder;
   bool isRecorderInit = false;
   bool isShowEmojiContainer = false;
@@ -36,6 +39,7 @@ class _BottomChatFieldState extends ConsumerState<BottomChatField> {
   void initState() {
     super.initState();
     _soundRecorder = FlutterSoundRecorder();
+    notificationsService.getReceiverToken(widget.recieverUserId, isClientSide: widget.isFromClientSide);
     openAudio();
   }
 
@@ -63,7 +67,10 @@ class _BottomChatFieldState extends ConsumerState<BottomChatField> {
               widget.recieverUserId,
             );
       }
-
+      
+      await notificationsService.sendNotification(
+        body:  _messageController.text.trim(),
+      );
       setState(() {
         _messageController.text = '';
       });

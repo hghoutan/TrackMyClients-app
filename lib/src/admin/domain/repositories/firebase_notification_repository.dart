@@ -1,111 +1,184 @@
+import 'dart:convert';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:timezone/data/latest.dart' as tz;
-import 'package:timezone/timezone.dart' as tz;
+import 'package:http/http.dart' as http;
+import 'package:trackmyclients_app/src/admin/presentation/views/chat/chat_screen.dart';
 
-class LocalNotificationService {
-  final FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin =
-      FlutterLocalNotificationsPlugin();
-  FirebaseMessaging _messaging = FirebaseMessaging.instance;
+const channel = AndroidNotificationChannel(
+    'high_importance_channel', 'Hign Importance Notifications',
+    description: 'This channel is used for important notifications.',
+    importance: Importance.high,
+    playSound: true);
 
-  Future<void> init() async {
-    await _messaging.requestPermission(
-        alert: true,
-        announcement: false,
-        badge: true,
-        carPlay: false,
-        criticalAlert: false,
-        provisional: true,
-        sound: true,
-    );
-    _messaging.setForegroundNotificationPresentationOptions(
-      alert: true,
-      badge: true,
-      sound: true);
-    // Initialize native android notification
-    const AndroidInitializationSettings _initializationSettingsAndroid =
+class NotificationsService {
+  static const key =
+      'AAAAsfbE86Y:APA91bEUV5GG-gIOv22cMdetxOcxJph7rD5QWJCyFbHRvsgJbCPl684fohdd0bdOEkz4ep6_bErmJPHAfGl0TWhmjdtfemg-2HWKnsooX66dD2TSIhEcSt2wdX-MqEI9X7lUVVrH22JB';
+
+  final flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+
+  void _initLocalNotification() {
+    const androidSettings =
         AndroidInitializationSettings('@mipmap/ic_launcher');
 
-    // Initialize native Ios Notifications
-    const DarwinInitializationSettings _initializationSettingsIOS =
-        DarwinInitializationSettings();
+    const iosSettings = DarwinInitializationSettings(
+      requestAlertPermission: true,
+      requestBadgePermission: true,
+      requestCriticalPermission: true,
+      requestSoundPermission: true,
+    );
 
-    const InitializationSettings _initializationSettings =
-        InitializationSettings(
-      android: _initializationSettingsAndroid,
-      iOS: _initializationSettingsIOS,
-    );
-    await _flutterLocalNotificationsPlugin.initialize(
-      _initializationSettings,
-    );
-    tz.initializeTimeZones();
+    const initializationSettings =
+        InitializationSettings(android: androidSettings, iOS: iosSettings);
+    flutterLocalNotificationsPlugin.initialize(initializationSettings,
+        onDidReceiveNotificationResponse: (response) {
+      debugPrint(response.payload.toString());
+    });
   }
 
-  Future<void> showNotificationAndroid(String title, String value) async {
-    const AndroidNotificationDetails _androidNotificationDetails =
-        AndroidNotificationDetails('channel_id', 'Channel Name',
-            channelDescription: 'Channel Description',
-            importance: Importance.max,
-            priority: Priority.high,
-            ticker: 'ticker');
-
-    const NotificationDetails _notificationDetails =
-        NotificationDetails(android: _androidNotificationDetails);
-
-    await _flutterLocalNotificationsPlugin.show(
-      1, // notification id
-      title,
-      value,
-      _notificationDetails,
-      payload: 'Not present',
+  Future<void> _showLocalNotification(RemoteMessage message) async {
+    final styleInformation = BigTextStyleInformation(
+      message.notification!.body.toString(),
+      htmlFormatBigText: true,
+      contentTitle: message.notification!.title,
+      htmlFormatTitle: true,
     );
+    final androidDetails = AndroidNotificationDetails(
+      'com.ghoutani.trackmyclients_app',
+      'mychannelid',
+      importance: Importance.max,
+      styleInformation: styleInformation,
+      priority: Priority.max,
+    );
+    const iosDetails = DarwinNotificationDetails(
+      presentAlert: true,
+      presentBadge: true,
+    );
+
+    final notificationDetails = NotificationDetails(
+      android: androidDetails,
+      iOS: iosDetails,
+    );
+    await flutterLocalNotificationsPlugin.show(0, message.notification!.title,
+        message.notification!.body, notificationDetails,
+        payload: message.data['body']);
   }
 
-  Future<void> showNotificationIos(String title, String value) async {
-    const DarwinNotificationDetails _iOSPlatformChannelSpecifics =
-        DarwinNotificationDetails(
-      presentAlert:
-          true, // Present an alert when the notification is displayed and the application is in the foreground (only from iOS 10 onwards)
-      presentBadge:
-          true, // Present the badge number when the notification is displayed and the application is in the foreground (only from iOS 10 onwards)
-      presentSound:
-          true, // Play a sound when the notification is displayed and the application is in the foreground (only from iOS 10 onwards)
-      sound:
-          'ound.caf', // Specifics the file path to play (only from iOS 10 onwards)
-      badgeNumber: 1, // The application's icon badge number
-      attachments: [], // (only from iOS 10 onwards)
-      subtitle:
-          'Secondary description', // Secondary description  (only from iOS 10 onwards)
-      threadIdentifier: 'thread_id', // (only from iOS 10 onwards)
+  Future<void> requestPermission() async {
+    final messaging = FirebaseMessaging.instance;
+
+    final settings = await messaging.requestPermission(
+      alert: true,
+      announcement: false,
+      badge: true,
+      carPlay: false,
+      criticalAlert: false,
+      provisional: false,
+      sound: true,
     );
 
-    const NotificationDetails _platformChannelSpecifics =
-        NotificationDetails(iOS: _iOSPlatformChannelSpecifics);
-
-    await _flutterLocalNotificationsPlugin.show(
-      1, // notification id
-      title,
-      value,
-      _platformChannelSpecifics,
-      payload: 'Not present',
-    );
+    if (settings.authorizationStatus == AuthorizationStatus.authorized) {
+      debugPrint('User granted permission');
+    } else if (settings.authorizationStatus ==
+        AuthorizationStatus.provisional) {
+      debugPrint('User granted provisional permission');
+    } else {
+      debugPrint('User declined or has not accepted permission');
+    }
   }
 
-  Future<void> showTimedNotification() async {
-    await _flutterLocalNotificationsPlugin.zonedSchedule(
-      1, // notification id
-      "Title",
-      "Description",
-      tz.TZDateTime.now(tz.local).add(const Duration(days: 3)),
-      const NotificationDetails(
-        android: AndroidNotificationDetails(
-          'channel_id',
-          'Channel Name',
+  Future<void> getToken({String aui = ''}) async {
+    final token = await FirebaseMessaging.instance.getToken();
+    _saveToken(token!, aui: aui);
+  }
+
+  Future<void> _saveToken(String token, {required String aui}) async {
+    try {
+      if (aui.isNotEmpty) {
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(aui)
+            .collection('clients')
+            .doc(FirebaseAuth.instance.currentUser!.uid)
+            .set({'token': token}, SetOptions(merge: true));
+        return;
+      }
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(FirebaseAuth.instance.currentUser!.uid)
+          .set({'token': token}, SetOptions(merge: true));
+    } catch (e) {
+      print(e.toString());
+    }
+  }
+
+  String receiverToken = '';
+
+  Future<void> getReceiverToken(String? receiverId,
+      {bool isClientSide = false}) async {
+    final getToken;
+    if (isClientSide) {
+      getToken = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(receiverId)
+          .collection('clients')
+          .doc(FirebaseAuth.instance.currentUser!.uid)
+          .get();
+    } else {
+      getToken = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(FirebaseAuth.instance.currentUser!.uid)
+          .collection('clients')
+          .doc(receiverId)
+          .get();
+    }
+
+    print(getToken.data());
+    receiverToken = await getToken.data()!['token'];
+  }
+
+  void firebaseNotification(context) {
+    _initLocalNotification();
+
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) async {
+      await Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => ChatScreen(id: message.data['senderId']),
         ),
-      ),
-      androidAllowWhileIdle: true,
-      uiLocalNotificationDateInterpretation:
-          UILocalNotificationDateInterpretation.absoluteTime,
-    );
+      );
+    });
+
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
+      await _showLocalNotification(message);
+    });
+  }
+
+  Future<void> sendNotification({required String body}) async {
+    try {
+      await http.post(
+        Uri.parse('https://fcm.googleapis.com/fcm/send'),
+        headers: <String, String>{
+          'Content-Type': 'application/json',
+          'Authorization': 'key=$key',
+        },
+        body: jsonEncode(<String, dynamic>{
+          "to": receiverToken,
+          'priority': 'high',
+          'notification': <String, dynamic>{
+            'body': body,
+            'title': 'New Message !',
+          },
+          'data': <String, String>{
+            'click_action': 'FLUTTER_NOTIFICATION_CLICK',
+            'status': 'done',
+            'senderId': FirebaseAuth.instance.currentUser!.uid,
+          }
+        }),
+      );
+    } catch (e) {
+      debugPrint(e.toString());
+    }
   }
 }

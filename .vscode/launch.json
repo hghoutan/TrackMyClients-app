@@ -4,6 +4,7 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
+    
         {
             "name": "trackmyclients_app",
             "request": "launch",
@@ -20,6 +21,26 @@
             "request": "launch",
             "type": "dart",
             "flutterMode": "release"
+        },
+        {
+            "name": "android",
+            "request": "launch",
+            "type": "dart",
+            "deviceId": "emulator-5554"
+        },
+        {
+            "name": "iphone 15 pro max",
+            "request": "launch",
+            "type": "dart",
+            "deviceId": "82834BC8-8EF8-4991-BE2D-E8A732473C98"
+        }
+    ],
+    "compounds": [
+        {
+            "name": "All Devices",
+            "configurations": ["android","iphone 15 pro max"]
         }
     ]
+
+    
 }

@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -42,7 +43,8 @@ class ClientRepository {
     try {
       // the current user
       String currentUid = auth.currentUser!.uid;
-      FirebaseAuth secondAuth = FirebaseAuth.instanceFor(app: SecondaryAppProvider.of(context));
+      FirebaseAuth secondAuth =
+          FirebaseAuth.instanceFor(app: SecondaryAppProvider.of(context));
 
       // the new user which is the client
       final userCredential = await secondAuth.createUserWithEmailAndPassword(
@@ -78,6 +80,8 @@ class ClientRepository {
           .collection('clients')
           .doc(clientId)
           .set(updatedClient.toMap());
+      final token = await FirebaseMessaging.instance.getToken();
+      print(token);
     } catch (e) {
       showSnackBar(context: context, content: e.toString());
     }

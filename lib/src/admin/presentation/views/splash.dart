@@ -9,6 +9,7 @@ import 'package:trackmyclients_app/src/admin/presentation/views/main_screen.dart
 
 import '../../../utils/functions/next_screen.dart';
 import '../../../utils/images.dart';
+import '../../domain/repositories/firebase_notification_repository.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({super.key});
@@ -19,9 +20,10 @@ class SplashScreen extends ConsumerStatefulWidget {
 
 class _SplashScreenState extends ConsumerState<SplashScreen>
     with SingleTickerProviderStateMixin {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final notificationsService = NotificationsService();
   late AnimationController _controller;
   late Animation<double> _animation;
-  final FirebaseAuth _auth = FirebaseAuth.instance;
 
   @override
   void initState() {
@@ -35,7 +37,9 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
       end: 2 * 3.141,
     ).animate(_controller);
 
-    Future.delayed(const Duration(seconds: 3), () {
+    Future.delayed(const Duration(seconds: 3), () async {
+      await notificationsService.requestPermission();
+      await notificationsService.getToken();
       _gotoWelcomePage();
     });
 
@@ -43,13 +47,13 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   }
 
   Future<void> _gotoWelcomePage() async {
-      UserData? user = await ref.watch(authControllerProvider).getUserData();
-      setState(() {
-        nextScreenReplaceAnimation(
-          context,
-          user != null ? const MainScreen() : const AdminLoginScreen(),
-        );
-      });
+    UserData? user = await ref.watch(authControllerProvider).getUserData();
+    setState(() {
+      nextScreenReplaceAnimation(
+        context,
+        user != null ? const MainScreen() : const AdminLoginScreen(),
+      );
+    });
   }
 
   @override
