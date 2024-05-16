@@ -1,12 +1,13 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:trackmyclients_app/src/admin/domain/controllers/auth_controller.dart';
 import 'package:trackmyclients_app/src/admin/domain/models/user.dart';
 import 'package:trackmyclients_app/src/admin/presentation/views/auth/admin_login.dart';
 import 'package:trackmyclients_app/src/admin/presentation/views/main_screen.dart';
 
+import '../../../client/presentation/views/client_chat.dart';
 import '../../../utils/functions/next_screen.dart';
 import '../../../utils/images.dart';
 import '../../domain/repositories/firebase_notification_repository.dart';
@@ -22,6 +23,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     with SingleTickerProviderStateMixin {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final notificationsService = NotificationsService();
+
   late AnimationController _controller;
   late Animation<double> _animation;
 
@@ -48,10 +50,16 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
 
   Future<void> _gotoWelcomePage() async {
     UserData? user = await ref.watch(authControllerProvider).getUserData();
+    final prefs = await SharedPreferences.getInstance();
+    String? aui = prefs.getString('adminUid');
     setState(() {
       nextScreenReplaceAnimation(
         context,
-        user != null ? const MainScreen() : const AdminLoginScreen(),
+        user != null
+            ? user.role == 'Admin'
+                ? const MainScreen()
+                : ClientChatScreen(id: aui!)
+            : const AdminLoginScreen(),
       );
     });
   }

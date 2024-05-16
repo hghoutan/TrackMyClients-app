@@ -1,15 +1,20 @@
 import 'package:flutter/material.dart';
 
 import 'package:flutter_quill/flutter_quill.dart';
+import 'package:flutter_quill/quill_delta.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
+import 'package:trackmyclients_app/src/admin/domain/controllers/auth_controller.dart';
 import 'package:trackmyclients_app/src/admin/domain/controllers/client_controller.dart';
 import 'package:trackmyclients_app/src/admin/domain/models/client.dart';
+import 'package:trackmyclients_app/src/admin/domain/models/user.dart';
 import 'package:trackmyclients_app/src/admin/presentation/widgets/main_button.dart';
-import 'package:trackmyclients_app/src/client/domain/controllers/client_auth_controller.dart';
-import 'package:trackmyclients_app/src/client/domain/controllers/client_chat_controller.dart';
 import 'package:trackmyclients_app/src/utils/functions/date_picker.dart';
+import 'package:trackmyclients_app/src/utils/functions/message_tools.dart';
+import 'package:flutter_quill/flutter_quill.dart' as quill;
+
+import '../../../utils/functions/toast_helper.dart';
 
 class ScheduleMessageScreen extends ConsumerStatefulWidget {
   const ScheduleMessageScreen({super.key});
@@ -35,6 +40,70 @@ class _ScheduleMessageScreenState extends ConsumerState<ScheduleMessageScreen> {
   void removeDate(int index) {
     scheduledDates.removeAt(index);
     setState(() {});
+  }
+
+  void scheduleMessage() async {
+    if (selectedClient == null) {
+      ToastHelper().showCustomToast(
+        context: context,
+        message: "Please select a client",
+      );
+      return;
+    }
+
+    if (!(emailSelected || smsSelected || whatsAppSelected)) {
+      ToastHelper().showCustomToast(
+          context: context, message: "Please select a communication method");
+      return;
+    }
+
+    if (_controller.document.toPlainText().length <= 1) {
+      ToastHelper().showCustomToast(
+          context: context, message: "Message cannot be empty");
+      return;
+    }
+    UserData? user = await ref.watch(authControllerProvider).getUserData();
+    if (emailSelected) {
+      final message = _controller.document.toDelta();
+      final htmlMessage = deltaToHtml(message);
+      await sendMail(
+          senderName: "${user!.firstName!} ${user.lastName!}",
+          recieverName: selectedClient!.name!,
+          receiverEmail: selectedClient!.email!,
+          senderEmail: user.email!,
+          message: htmlMessage);
+      _showToast();
+    }
+  }
+
+  
+
+  _showToast() {
+    Widget toast = Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(
+          Icons.check,
+          color: Colors.white,
+        ),
+        SizedBox(
+          width: 12.0,
+        ),
+        Text(
+          "Email sent !",
+          style: TextStyle(color: Colors.white),
+        ),
+      ],
+    );
+
+    ToastHelper().showCustomToast(context: context, toast: toast);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    
+    ToastHelper().init(context);
   }
 
   @override
@@ -144,7 +213,6 @@ class _ScheduleMessageScreenState extends ConsumerState<ScheduleMessageScreen> {
                                 ]),
                           ],
                         )
-                       
                       ],
                     ),
                   ),
@@ -238,7 +306,9 @@ class _ScheduleMessageScreenState extends ConsumerState<ScheduleMessageScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        selectedClient != null ? Text("To: ${selectedClient!.name}") : SizedBox(),
+                        selectedClient != null
+                            ? Text("To: ${selectedClient!.name}")
+                            : SizedBox(),
                         SizedBox(height: 20),
                         Container(
                           decoration: BoxDecoration(
@@ -334,7 +404,9 @@ class _ScheduleMessageScreenState extends ConsumerState<ScheduleMessageScreen> {
                       text: "Confirm & Schedule message",
                       backgroundColor: Theme.of(context).colorScheme.primary,
                       style: Theme.of(context).textTheme.titleMedium!,
-                      onPressed: () {}),
+                      onPressed: () {
+                        scheduleMessage();
+                      }),
                   SizedBox(height: 24)
                 ],
               ),
@@ -374,9 +446,10 @@ class _ScheduleMessageScreenState extends ConsumerState<ScheduleMessageScreen> {
                 value: client,
                 child: Text(
                   client.name!,
-                  style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                    color: Colors.black
-                  ),
+                  style: Theme.of(context)
+                      .textTheme
+                      .titleMedium!
+                      .copyWith(color: Colors.black),
                 ),
               ))
           .toList(),

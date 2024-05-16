@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:trackmyclients_app/src/admin/domain/repositories/firebase_notification_repository.dart';
 import 'package:trackmyclients_app/src/admin/presentation/views/chat/select_client.dart';
 import 'package:trackmyclients_app/src/utils/functions/next_screen.dart';
 
@@ -18,6 +19,7 @@ class LayoutScreen extends ConsumerStatefulWidget {
 
 class _LayoutScreenState extends ConsumerState<LayoutScreen>
     with WidgetsBindingObserver {
+  final  notificationService = NotificationsService();
   TextEditingController searchController = TextEditingController();
   List<ChatContact> contacts = [];
 
@@ -43,6 +45,7 @@ class _LayoutScreenState extends ConsumerState<LayoutScreen>
   void initState() {
     super.initState();
     getChatContacts();
+    notificationService.firebaseNotification(context);
     WidgetsBinding.instance.addObserver(this);
   }
 

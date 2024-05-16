@@ -172,7 +172,8 @@ class _AdminRegisterAdditionalInfoPageState
                                 //     '+212${phoneController.text}');
                                 UserData newUserData =  widget.user.copyWith(
                                   email: emailController.text,
-                                  phone: phoneController.text
+                                  phone: phoneController.text,
+                                  role: 'Admin'
                                 );
                                 String msg = await ref.read(authControllerProvider).signUp(context, newUserData, passwordController.text);
 

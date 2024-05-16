@@ -16,7 +16,7 @@ final authRepositoryProvider = ChangeNotifierProvider(
   ),
 );
 
-class AuthRepository  extends ChangeNotifier {
+class AuthRepository extends ChangeNotifier {
   final FirebaseAuth auth;
   final FirebaseFirestore firestore;
   AuthRepository({
@@ -36,6 +36,7 @@ class AuthRepository  extends ChangeNotifier {
           await firestore.collection('users').doc(auth.currentUser?.uid).get();
 
       UserData? user;
+
       if (userData.data() != null) {
         user = UserData.fromMap(userData.data()!);
       }
@@ -180,11 +181,9 @@ class AuthRepository  extends ChangeNotifier {
       'isOnline': isOnline,
     });
   }
+
   Future<void> signOut() async {
     await auth.signOut();
     notifyListeners();
   }
-
-
-  
 }

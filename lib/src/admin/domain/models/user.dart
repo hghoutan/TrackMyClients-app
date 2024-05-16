@@ -10,6 +10,7 @@ class UserData {
   String? city;
   String? email;
   String? phone;
+  String? role;
   bool? isOnline;
   UserData({
     this.id,
@@ -20,6 +21,7 @@ class UserData {
     this.city,
     this.email,
     this.phone,
+    this.role,
     this.isOnline,
   });
 
@@ -32,6 +34,7 @@ class UserData {
     String? city,
     String? email,
     String? phone,
+    String? role,
     bool? isOnline,
   }) {
     return UserData(
@@ -43,6 +46,7 @@ class UserData {
       city: city ?? this.city,
       email: email ?? this.email,
       phone: phone ?? this.phone,
+      role: role ?? this.role,
       isOnline: isOnline ?? this.isOnline,
     );
   }
@@ -57,6 +61,7 @@ class UserData {
       'city': city,
       'email': email,
       'phone': phone,
+      'role': role,
       'isOnline': isOnline,
     };
   }
@@ -66,11 +71,13 @@ class UserData {
       id: map['id'] != null ? map['id'] as String : null,
       firstName: map['firstName'] != null ? map['firstName'] as String : null,
       lastName: map['lastName'] != null ? map['lastName'] as String : null,
-      birthdayYear: map['birthdayYear'] != null ? map['birthdayYear'] as String : null,
+      birthdayYear:
+          map['birthdayYear'] != null ? map['birthdayYear'] as String : null,
       gender: map['gender'] != null ? map['gender'] as String : null,
       city: map['city'] != null ? map['city'] as String : null,
       email: map['email'] != null ? map['email'] as String : null,
       phone: map['phone'] != null ? map['phone'] as String : null,
+      role: map['role'] != null ? map['role'] as String : null,
       isOnline: map['isOnline'] != null ? map['isOnline'] as bool : null,
     );
   }
@@ -87,35 +94,36 @@ class UserData {
 
   @override
   String toString() {
-    return 'UserData(id: $id, firstName: $firstName, lastName: $lastName, birthdayYear: $birthdayYear, gender: $gender, city: $city, email: $email, phone: $phone, isOnline: $isOnline)';
+    return 'UserData(id: $id, firstName: $firstName, lastName: $lastName, birthdayYear: $birthdayYear, gender: $gender, city: $city, email: $email, phone: $phone, role: $role, isOnline: $isOnline)';
   }
 
   @override
   bool operator ==(covariant UserData other) {
     if (identical(this, other)) return true;
-  
-    return 
-      other.id == id &&
-      other.firstName == firstName &&
-      other.lastName == lastName &&
-      other.birthdayYear == birthdayYear &&
-      other.gender == gender &&
-      other.city == city &&
-      other.email == email &&
-      other.phone == phone &&
-      other.isOnline == isOnline;
+
+    return other.id == id &&
+        other.firstName == firstName &&
+        other.lastName == lastName &&
+        other.birthdayYear == birthdayYear &&
+        other.gender == gender &&
+        other.city == city &&
+        other.email == email &&
+        other.phone == phone &&
+        other.role == role &&
+        other.isOnline == isOnline;
   }
 
   @override
   int get hashCode {
     return id.hashCode ^
-      firstName.hashCode ^
-      lastName.hashCode ^
-      birthdayYear.hashCode ^
-      gender.hashCode ^
-      city.hashCode ^
-      email.hashCode ^
-      phone.hashCode ^
-      isOnline.hashCode;
+        firstName.hashCode ^
+        lastName.hashCode ^
+        birthdayYear.hashCode ^
+        gender.hashCode ^
+        city.hashCode ^
+        email.hashCode ^
+        phone.hashCode ^
+        role.hashCode ^
+        isOnline.hashCode;
   }
 }

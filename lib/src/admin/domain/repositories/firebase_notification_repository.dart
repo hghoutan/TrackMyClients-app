@@ -16,12 +16,12 @@ const channel = AndroidNotificationChannel(
 class NotificationsService {
   static const key =
       'AAAAsfbE86Y:APA91bEUV5GG-gIOv22cMdetxOcxJph7rD5QWJCyFbHRvsgJbCPl684fohdd0bdOEkz4ep6_bErmJPHAfGl0TWhmjdtfemg-2HWKnsooX66dD2TSIhEcSt2wdX-MqEI9X7lUVVrH22JB';
-
   final flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
 
   void _initLocalNotification() {
+    requestPermission();
     const androidSettings =
-        AndroidInitializationSettings('@mipmap/ic_launcher');
+        AndroidInitializationSettings('trackmyclients');
 
     const iosSettings = DarwinInitializationSettings(
       requestAlertPermission: true,
@@ -34,7 +34,6 @@ class NotificationsService {
         InitializationSettings(android: androidSettings, iOS: iosSettings);
     flutterLocalNotificationsPlugin.initialize(initializationSettings,
         onDidReceiveNotificationResponse: (response) {
-      debugPrint(response.payload.toString());
     });
   }
 
@@ -46,12 +45,11 @@ class NotificationsService {
       htmlFormatTitle: true,
     );
     final androidDetails = AndroidNotificationDetails(
-      'com.ghoutani.trackmyclients_app',
-      'mychannelid',
-      importance: Importance.max,
-      styleInformation: styleInformation,
-      priority: Priority.max,
-    );
+        'com.ghoutani.trackmyclients_app', 'mychannelid',
+        importance: Importance.max,
+        styleInformation: styleInformation,
+        priority: Priority.high,
+        ticker: 'ticker');
     const iosDetails = DarwinNotificationDetails(
       presentAlert: true,
       presentBadge: true,
@@ -114,7 +112,7 @@ class NotificationsService {
     }
   }
 
-  String receiverToken = '';
+  String? receiverToken = '';
 
   Future<void> getReceiverToken(String? receiverId,
       {bool isClientSide = false}) async {
@@ -134,8 +132,7 @@ class NotificationsService {
           .doc(receiverId)
           .get();
     }
-
-    print(getToken.data());
+    
     receiverToken = await getToken.data()!['token'];
   }
 

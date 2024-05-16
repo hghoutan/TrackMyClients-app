@@ -80,8 +80,6 @@ class ClientRepository {
           .collection('clients')
           .doc(clientId)
           .set(updatedClient.toMap());
-      final token = await FirebaseMessaging.instance.getToken();
-      print(token);
     } catch (e) {
       showSnackBar(context: context, content: e.toString());
     }

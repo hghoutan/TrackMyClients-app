@@ -11,7 +11,7 @@
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
     <!-- The Agora SDK requires Bluetooth permissions in case users are using Bluetooth devices.-->
     <uses-permission  android:name="android.permission.BLUETOOTH"  />
-
+    
     <application
         android:label="trackmyclients_app"
         android:name="${applicationName}"
@@ -35,6 +35,12 @@
               <meta-data
                 android:name="com.google.firebase.messaging.default_notification_channel"
                 android:value="@string/default_notification_channel_id"/>
+                <meta-data
+                        android:name="com.google.firebase.messaging.default_notification_icon"
+                android:resource="@drawable/trackmyclients" />
+                <meta-data
+                    android:name="com.google.firebase.messaging.default_notification_color"
+                    android:resource="@color/colorPrimary" />
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
@@ -60,5 +66,7 @@
             <action android:name="android.intent.action.PROCESS_TEXT"/>
             <data android:mimeType="text/plain"/>
         </intent>
+        
     </queries>
+   
 </manifest>
