@@ -37,7 +37,7 @@ String deltaToHtml(Delta delta) {
         // if (op.attributes!.containsKey('color')) {
         //   attrs.add('color: ${op.attributes['color']}');
         // }
-        
+
         html.add(
             '<span $style>${op.data.toString().replaceAll('\n', '<br>')}</span>');
       } else {
@@ -62,11 +62,21 @@ Future<void> sendMail({
 }) async {
   String username = senderEmail;
   try {
-    String? token = await GoogleService().signInGoogle();
-    if (token == null) {
-      return;
-    }
-    final smtpServer = gmailSaslXoauth2(username, token);
+    final _smtpLogin =
+        "postmaster@sandbox6df3165463c247f3a71b710cb0bb58a6.mailgun.org";
+    final _password = "a2292231efaff1faf74849f52f19fbe3-32a0fef1-6b65e2b6";
+    // this for sending emails with mail.google.com
+    // String? token = await GoogleService().signInGoogle();
+    // if (token == null) {
+    //   return;
+    // }
+    // with mailgun
+    final smtpServer = mailgun(
+        _smtpLogin,
+        _password
+      );
+    // send with mail.google.com
+    // gmailSaslXoauth2(username, token);
 
     final mailMessage = Message()
       ..from = Address(username, senderName)

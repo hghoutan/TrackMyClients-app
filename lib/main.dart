@@ -1,14 +1,12 @@
-
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+// import 'package:flutter_sms/flutter_sms.dart';
 import 'package:trackmyclients_app/firebase_options.dart';
 
 import 'src/config/app_router.dart';
 import 'src/utils/styles.dart';
-
-
 
 class SecondaryAppProvider extends InheritedWidget {
   final FirebaseApp secondaryApp;
@@ -37,6 +35,17 @@ Future<void> _backgroundMessageHandler(RemoteMessage message) async {
   );
 }
 
+void _sendSMS(String message, List<String> recipents) async {
+  // String _result =
+  //     await sendSMS(message: message, recipients: recipents, sendDirect: true)
+  //         .catchError((onError) {
+  //            print(onError);
+  //   return onError.toString();
+   
+  // });
+  // print(_result);
+}
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
@@ -45,8 +54,11 @@ Future<void> main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   await FirebaseMessaging.instance.getInitialMessage();
-
   FirebaseMessaging.onBackgroundMessage(_backgroundMessageHandler);
+  String message = "This is a test message!";
+  List<String> recipents = ["+212707347562"];
+
+  _sendSMS(message, recipents);
   runApp(
     SecondaryAppProvider(
       secondaryApp: secondaryApp,
@@ -57,7 +69,6 @@ Future<void> main() async {
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-  
 
   @override
   Widget build(BuildContext context) {

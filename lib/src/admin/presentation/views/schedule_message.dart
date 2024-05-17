@@ -15,6 +15,9 @@ import 'package:trackmyclients_app/src/utils/functions/message_tools.dart';
 import 'package:flutter_quill/flutter_quill.dart' as quill;
 
 import '../../../utils/functions/toast_helper.dart';
+import '../../../utils/services/email_scheduling.dart';
+import '../../data/helpers/local_database_helper.dart';
+import '../../data/models/scheduled_message.dart';
 
 class ScheduleMessageScreen extends ConsumerStatefulWidget {
   const ScheduleMessageScreen({super.key});
@@ -31,6 +34,8 @@ class _ScheduleMessageScreenState extends ConsumerState<ScheduleMessageScreen> {
   bool smsSelected = false;
   bool whatsAppSelected = false;
   QuillController _controller = QuillController.basic();
+
+  final dbHelper = DatabaseHelper();
 
   void addDate(DateTime dateTime) {
     scheduledDates.add(dateTime);
@@ -76,7 +81,42 @@ class _ScheduleMessageScreenState extends ConsumerState<ScheduleMessageScreen> {
     }
   }
 
-  
+  Future<void> scheduleNewEmail() async {
+    if (selectedClient == null) {
+      ToastHelper().showCustomToast(
+        context: context,
+        message: "Please select a client",
+      );
+      return;
+    }
+
+    if (!(emailSelected || smsSelected || whatsAppSelected)) {
+      ToastHelper().showCustomToast(
+          context: context, message: "Please select a communication method");
+      return;
+    }
+
+    if (_controller.document.toPlainText().length <= 1) {
+      ToastHelper().showCustomToast(
+          context: context, message: "Message cannot be empty");
+      return;
+    }
+    UserData? user = await ref.watch(authControllerProvider).getUserData();
+
+    final email = ScheduledEmail(
+      id: 13,
+      senderName: "${user!.firstName!} ${user.lastName!}",
+      receiverName: selectedClient!.name!,
+      receiverEmail: selectedClient!.email!,
+      senderEmail: user.email!,
+      message: 'Hello, this is a scheduled message!',
+      scheduledTime: DateTime.now().add(Duration(minutes: 1)),
+    );
+
+    final emailId = await dbHelper.insertScheduledEmail(email);
+    final scheduledEmail = email.copyWith(id: emailId);
+    await scheduleEmail(scheduledEmail);
+  }
 
   _showToast() {
     Widget toast = Row(
@@ -102,7 +142,7 @@ class _ScheduleMessageScreenState extends ConsumerState<ScheduleMessageScreen> {
   @override
   void initState() {
     super.initState();
-    
+
     ToastHelper().init(context);
   }
 
