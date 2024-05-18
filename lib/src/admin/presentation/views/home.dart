@@ -25,8 +25,8 @@ class HomeScreen extends ConsumerStatefulWidget {
 class _HomeScreenState extends ConsumerState<HomeScreen> {
   TextEditingController searchController = TextEditingController();
   int switcherIndex = 0;
-  List<ClientData> fullClientDataList = [];
-  List<ClientData> clientDataList = [];
+  List<Client> fullClientDataList = [];
+  List<Client> clientDataList = [];
 
   void getClientList(void Function(void Function()) setState) async {
     clientDataList = fullClientDataList;
@@ -39,10 +39,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     if (value.isEmpty) {
       getClientList(setState);
     } else {
-        clientDataList = fullClientDataList
-            .where((client) =>
-                client.name!.toLowerCase().contains(value.toLowerCase()))
-            .toList();
+      clientDataList = fullClientDataList
+          .where((client) =>
+              client.name!.toLowerCase().contains(value.toLowerCase()))
+          .toList();
     }
     setState(() {});
   }
@@ -52,11 +52,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     super.didChangeDependencies();
     fullClientDataList =
         await ref.read(clientControllerProvider).fetchAllClients().first;
-    getClientList((_) {
-      setState(() {
-      });
-    },);
-    
+    getClientList(
+      (_) {
+        setState(() {});
+      },
+    );
   }
 
   @override

@@ -2,7 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:trackmyclients_app/src/admin/domain/models/user.dart';
+import 'package:trackmyclients_app/src/admin/domain/models/admin.dart';
 import 'package:trackmyclients_app/src/client/domain/controllers/admin_controller.dart';
 import 'package:trackmyclients_app/src/client/domain/controllers/client_auth_controller.dart';
 
@@ -59,7 +59,7 @@ class _ClientChatScreenState extends ConsumerState<ClientChatScreen>
       appBar: AppBar(
         backgroundColor: Colors.white,
         surfaceTintColor: Colors.white,
-        title: StreamBuilder<UserData>(
+        title: StreamBuilder<Admin>(
             stream: ref.read(adminControllerProvider).getclientData(widget.id),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
@@ -77,7 +77,8 @@ class _ClientChatScreenState extends ConsumerState<ClientChatScreen>
                       shape: BoxShape.circle,
                     ),
                     child: CachedNetworkImage(
-                      imageUrl: 'https://firebasestorage.googleapis.com/v0/b/trackmyclients-app.appspot.com/o/profilePic%2FELmMPgAkv5e3ydOmOcodSnb1Xc72?alt=media&token=9cfca187-e17e-4fb3-a28c-6976ff2fb786',
+                      imageUrl:
+                          'https://firebasestorage.googleapis.com/v0/b/trackmyclients-app.appspot.com/o/profilePic%2FELmMPgAkv5e3ydOmOcodSnb1Xc72?alt=media&token=9cfca187-e17e-4fb3-a28c-6976ff2fb786',
                       width: 40,
                       height: 40,
                       fit: BoxFit.cover,
@@ -129,44 +130,45 @@ class _ClientChatScreenState extends ConsumerState<ClientChatScreen>
                                 ],
                               )
                             : snapshot.data!.isOnline!
-                                ?
-                        Row(
-                          children: [
-                            SizedBox(
-                              height: 9,
-                              width: 9,
-                              child: CircleAvatar(
-                                backgroundColor:
-                                    Theme.of(context).colorScheme.tertiary,
-                                radius: 33,
-                              ),
-                            ),
-                            const SizedBox(width: 4),
-                            Text(
-                              'Online',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .titleSmall!
-                                  .copyWith(
-                                    color:
-                                        Theme.of(context).colorScheme.tertiary,
-                                    fontWeight: FontWeight.w400,
+                                ? Row(
+                                    children: [
+                                      SizedBox(
+                                        height: 9,
+                                        width: 9,
+                                        child: CircleAvatar(
+                                          backgroundColor: Theme.of(context)
+                                              .colorScheme
+                                              .tertiary,
+                                          radius: 33,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 4),
+                                      Text(
+                                        'Online',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .titleSmall!
+                                            .copyWith(
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .tertiary,
+                                              fontWeight: FontWeight.w400,
+                                            ),
+                                      ),
+                                    ],
+                                  )
+                                : Text(
+                                    'offline',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleSmall!
+                                        .copyWith(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .secondary,
+                                          fontWeight: FontWeight.w400,
+                                        ),
                                   ),
-                            ),
-                          ],
-                        )
-                        : Text(
-                            'last time check in 16 apr',
-                            style: Theme.of(context)
-                                .textTheme
-                                .titleSmall!
-                                .copyWith(
-                                  color: Theme.of(context)
-                                      .colorScheme
-                                      .secondary,
-                                  fontWeight: FontWeight.w400,
-                                ),
-                          ),
                       ],
                     ),
                   ),

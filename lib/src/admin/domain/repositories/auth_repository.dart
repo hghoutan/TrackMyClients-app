@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:trackmyclients_app/src/admin/domain/models/user.dart';
+import 'package:trackmyclients_app/src/admin/domain/models/admin.dart';
 import 'package:trackmyclients_app/src/admin/presentation/views/auth/admin_fill_info.dart';
 import 'package:trackmyclients_app/src/admin/presentation/views/auth/admin_login.dart';
 import 'package:trackmyclients_app/src/admin/presentation/views/home.dart';
@@ -30,15 +30,15 @@ class AuthRepository extends ChangeNotifier {
 
   bool isEmailVerified() => auth.currentUser?.emailVerified ?? false;
 
-  Future<UserData?> getCurrentUserData() async {
+  Future<Admin?> getCurrentUserData() async {
     try {
       var userData =
           await firestore.collection('users').doc(auth.currentUser?.uid).get();
 
-      UserData? user;
+      Admin? user;
 
       if (userData.data() != null) {
-        user = UserData.fromMap(userData.data()!);
+        user = Admin.fromMap(userData.data()!);
       }
       return user;
     } catch (e) {
@@ -88,7 +88,7 @@ class AuthRepository extends ChangeNotifier {
 
   // user email/password sign up
   Future<String> signUp(
-      BuildContext context, UserData userData, String password) async {
+      BuildContext context, Admin userData, String password) async {
     try {
       UserCredential credential = await auth.createUserWithEmailAndPassword(
           email: userData.email!, password: password);
@@ -146,15 +146,14 @@ class AuthRepository extends ChangeNotifier {
           return 'Please verify your email address before logging in.';
         } else {
           try {
-            UserData userData = UserData.fromMap(
-                (await _users.doc(user.uid).get()).data()
-                    as Map<String, dynamic>);
+            Admin userData = Admin.fromMap((await _users.doc(user.uid).get())
+                .data() as Map<String, dynamic>);
             if (userData.isValid()) {
               nextScreenReplaceAnimation(context, const HomeScreen());
               return 'Google sign-in successful.';
             }
           } catch (e) {
-            UserData userData = UserData(id: user.uid, email: user.email);
+            Admin userData = Admin(id: user.uid, email: user.email);
             nextScreenAnimation(
                 context, AdminFillInfoScreen(userData: userData));
           }
@@ -168,7 +167,7 @@ class AuthRepository extends ChangeNotifier {
     }
   }
 
-  void updateUserData(BuildContext context, UserData userData) async {
+  void updateUserData(BuildContext context, Admin userData) async {
     try {
       await _users.doc(userData.id).set(userData.toMap());
     } catch (e) {

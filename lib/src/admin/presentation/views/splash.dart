@@ -3,10 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:trackmyclients_app/src/admin/domain/controllers/auth_controller.dart';
-import 'package:trackmyclients_app/src/admin/domain/models/user.dart';
+import 'package:trackmyclients_app/src/admin/domain/models/admin.dart';
+import 'package:trackmyclients_app/src/admin/domain/models/client.dart';
 import 'package:trackmyclients_app/src/admin/presentation/views/auth/admin_login.dart';
 import 'package:trackmyclients_app/src/admin/presentation/views/main_screen.dart';
+import 'package:trackmyclients_app/src/client/domain/controllers/client_auth_controller.dart';
 
+import '../../../client/domain/controllers/admin_controller.dart';
 import '../../../client/presentation/views/client_chat.dart';
 import '../../../utils/functions/next_screen.dart';
 import '../../../utils/images.dart';
@@ -41,7 +44,6 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
 
     Future.delayed(const Duration(seconds: 3), () async {
       await notificationsService.requestPermission();
-      await notificationsService.getToken();
       _gotoWelcomePage();
     });
 
@@ -49,19 +51,23 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   }
 
   Future<void> _gotoWelcomePage() async {
-    UserData? user = await ref.watch(authControllerProvider).getUserData();
+    Admin? user = await ref.watch(authControllerProvider).getUserData();
+    if (user != null) {
+      if (user.role! == 'Admin') {
+        await notificationsService.getToken();
+        nextScreenReplaceAnimation(context, const MainScreen());
+        return;
+      }
+    }
+    
     final prefs = await SharedPreferences.getInstance();
     String? aui = prefs.getString('adminUid');
-    setState(() {
-      nextScreenReplaceAnimation(
-        context,
-        user != null
-            ? user.role == 'Admin'
-                ? const MainScreen()
-                : ClientChatScreen(id: aui!)
-            : const AdminLoginScreen(),
-      );
-    });
+    if (aui == null) {
+      nextScreenReplaceAnimation(context, AdminLoginScreen());
+      return;
+    }
+
+     nextScreenReplaceAnimation(context, ClientChatScreen(id: aui));
   }
 
   @override

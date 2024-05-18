@@ -11,8 +11,6 @@ final clientControllerProvider = Provider((ref) {
   return ClientController(authRepository: authRepository, ref: ref);
 });
 
-
-
 class ClientController {
   final ClientRepository authRepository;
   final ProviderRef ref;
@@ -20,23 +18,23 @@ class ClientController {
     required this.authRepository,
     required this.ref,
   });
-  
-   Future<void> saveClientDataToFirebase(
-      BuildContext context,String password ,ClientData clientData, File? profilePic) async {
-      await authRepository.saveClientDataToFirebase(
-        password: password,
-        client: clientData,
-        profilePic: profilePic,
-        ref: ref,
-        context: context,
-      );
+
+  Future<void> saveClientDataToFirebase(BuildContext context, String password,
+      Client clientData, File? profilePic) async {
+    await authRepository.saveClientDataToFirebase(
+      password: password,
+      client: clientData,
+      profilePic: profilePic,
+      ref: ref,
+      context: context,
+    );
   }
-  Stream<List<ClientData>> fetchAllClients(){
+
+  Stream<List<Client>> fetchAllClients() {
     return authRepository.fetchAllClients();
   }
-  Stream<ClientData>? clientDataById(String id) {
+
+  Stream<Client>? clientDataById(String id) {
     return authRepository.clientData(id);
   }
-  
-
 }

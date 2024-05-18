@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:trackmyclients_app/src/admin/domain/models/user.dart';
+import 'package:trackmyclients_app/src/admin/domain/models/admin.dart';
 
 import '../repositories/auth_repository.dart';
 
@@ -24,8 +24,8 @@ class AuthController with ChangeNotifier {
     required this.ref,
   });
 
-  Future<UserData?> getUserData() async {
-    UserData? user = await authRepository.getCurrentUserData();
+  Future<Admin?> getUserData() async {
+    Admin? user = await authRepository.getCurrentUserData();
     return user;
   }
 
@@ -41,8 +41,7 @@ class AuthController with ChangeNotifier {
     return authRepository.signIn(context, email, password);
   }
 
-  Future<String> signUp(
-      BuildContext context, UserData userData, String password) {
+  Future<String> signUp(BuildContext context, Admin userData, String password) {
     return authRepository.signUp(context, userData, password);
   }
 
@@ -54,7 +53,7 @@ class AuthController with ChangeNotifier {
     return authRepository.signInWithGoogle(context);
   }
 
-  void updateUserData(BuildContext context, UserData userData) {
+  void updateUserData(BuildContext context, Admin userData) {
     return authRepository.updateUserData(context, userData);
   }
 

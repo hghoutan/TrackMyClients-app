@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:trackmyclients_app/src/admin/domain/models/user.dart';
+import 'package:trackmyclients_app/src/admin/domain/models/admin.dart';
 
 import '../../../utils/enums/message_enum.dart';
 import '../models/chat.dart';

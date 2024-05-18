@@ -8,7 +8,7 @@ import 'package:intl/intl.dart';
 import 'package:trackmyclients_app/src/admin/domain/controllers/auth_controller.dart';
 import 'package:trackmyclients_app/src/admin/domain/controllers/client_controller.dart';
 import 'package:trackmyclients_app/src/admin/domain/models/client.dart';
-import 'package:trackmyclients_app/src/admin/domain/models/user.dart';
+import 'package:trackmyclients_app/src/admin/domain/models/admin.dart';
 import 'package:trackmyclients_app/src/admin/presentation/widgets/main_button.dart';
 import 'package:trackmyclients_app/src/utils/functions/date_picker.dart';
 import 'package:trackmyclients_app/src/utils/functions/message_tools.dart';
@@ -28,7 +28,7 @@ class ScheduleMessageScreen extends ConsumerStatefulWidget {
 }
 
 class _ScheduleMessageScreenState extends ConsumerState<ScheduleMessageScreen> {
-  ClientData? selectedClient;
+  Client? selectedClient;
   List<DateTime> scheduledDates = [];
   bool emailSelected = false;
   bool smsSelected = false;
@@ -67,17 +67,32 @@ class _ScheduleMessageScreenState extends ConsumerState<ScheduleMessageScreen> {
           context: context, message: "Message cannot be empty");
       return;
     }
-    UserData? user = await ref.watch(authControllerProvider).getUserData();
+    Admin? user = await ref.watch(authControllerProvider).getUserData();
+    final message = _controller.document.toDelta();
+    final htmlMessage = deltaToHtml(message);
     if (emailSelected) {
-      final message = _controller.document.toDelta();
-      final htmlMessage = deltaToHtml(message);
       await sendMail(
           senderName: "${user!.firstName!} ${user.lastName!}",
           recieverName: selectedClient!.name!,
           receiverEmail: selectedClient!.email!,
           senderEmail: user.email!,
           message: htmlMessage);
-      _showToast();
+      _showToast("Email sent !");
+    }
+    if (whatsAppSelected) {
+      sendScheduledWhatsAppMessage(
+          receiverNum: selectedClient!.phoneNumber!,
+          senderName: "${user!.firstName!} ${user.lastName!}",
+          senderNum: user.phoneNumber!,
+          message: _controller.document.toPlainText(),
+          dateTime: scheduledDates.first.toIso8601String()
+        );
+      // sendWhatsAppMessage(
+      //     receiverNum: selectedClient!.phoneNumber!,
+      //     senderName: "${user!.firstName!} ${user.lastName!}",
+      //     senderNum: user.phoneNumber!,
+      //     message: _controller.document.toPlainText());
+      _showToast("WhatsApp message sent !");
     }
   }
 
@@ -101,7 +116,7 @@ class _ScheduleMessageScreenState extends ConsumerState<ScheduleMessageScreen> {
           context: context, message: "Message cannot be empty");
       return;
     }
-    UserData? user = await ref.watch(authControllerProvider).getUserData();
+    Admin? user = await ref.watch(authControllerProvider).getUserData();
 
     final email = ScheduledEmail(
       id: 13,
@@ -118,7 +133,7 @@ class _ScheduleMessageScreenState extends ConsumerState<ScheduleMessageScreen> {
     await scheduleEmail(scheduledEmail);
   }
 
-  _showToast() {
+  _showToast(String message) {
     Widget toast = Row(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -130,7 +145,7 @@ class _ScheduleMessageScreenState extends ConsumerState<ScheduleMessageScreen> {
           width: 12.0,
         ),
         Text(
-          "Email sent !",
+          message,
           style: TextStyle(color: Colors.white),
         ),
       ],
@@ -185,7 +200,7 @@ class _ScheduleMessageScreenState extends ConsumerState<ScheduleMessageScreen> {
                       children: [
                         SizedBox(
                           height: 50,
-                          child: StreamBuilder<List<ClientData>>(
+                          child: StreamBuilder<List<Client>>(
                               stream: ref
                                   .read(clientControllerProvider)
                                   .fetchAllClients(),
@@ -457,8 +472,8 @@ class _ScheduleMessageScreenState extends ConsumerState<ScheduleMessageScreen> {
     );
   }
 
-  Widget _DropDownWidget(List<ClientData>? clients) {
-    return DropdownButtonFormField<ClientData?>(
+  Widget _DropDownWidget(List<Client>? clients) {
+    return DropdownButtonFormField<Client?>(
       icon: SizedBox(),
       menuMaxHeight: 250,
       borderRadius: BorderRadius.circular(8),

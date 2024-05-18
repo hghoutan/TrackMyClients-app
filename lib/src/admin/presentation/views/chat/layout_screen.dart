@@ -19,26 +19,29 @@ class LayoutScreen extends ConsumerStatefulWidget {
 
 class _LayoutScreenState extends ConsumerState<LayoutScreen>
     with WidgetsBindingObserver {
-  final  notificationService = NotificationsService();
+  final notificationService = NotificationsService();
   TextEditingController searchController = TextEditingController();
-  List<ChatContact> contacts = [];
+  List<ChatContact> initialContactList = [];
+  List<ChatContact>? contacts;
 
   Future<void> getChatContacts() async {
-    contacts = await ref.read(chatControllerProvider).chatContacts().first;
-    setState(() {});
+    initialContactList =
+        await ref.read(chatControllerProvider).chatContacts().first;
+    setState(() {
+      contacts = List.from(initialContactList);
+    });
   }
 
   searchContact(String value) async {
-    getChatContacts();
+    contacts = List.from(initialContactList);
     if (!value.isEmpty) {
-      contacts = contacts
+      contacts = contacts!
           .where((contact) =>
               contact.name.toLowerCase().contains(value.toLowerCase()) ||
               contact.lastMessage.toLowerCase().contains(value.toLowerCase()))
           .toList();
-
-      setState(() {});
     }
+    setState(() {});
   }
 
   @override

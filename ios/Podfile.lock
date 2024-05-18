@@ -1100,8 +1100,6 @@ PODS:
     - Flutter
   - flutter_local_notifications (0.0.1):
     - Flutter
-  - flutter_sms (1.1.0):
-    - Flutter
   - flutter_sound (9.4.6):
     - Flutter
     - flutter_sound_core (= 9.4.6)
@@ -1285,7 +1283,6 @@ DEPENDENCIES:
   - Flutter (from `Flutter`)
   - flutter_keyboard_visibility (from `.symlinks/plugins/flutter_keyboard_visibility/ios`)
   - flutter_local_notifications (from `.symlinks/plugins/flutter_local_notifications/ios`)
-  - flutter_sms (from `.symlinks/plugins/flutter_sms/ios`)
   - flutter_sound (from `.symlinks/plugins/flutter_sound/ios`)
   - fluttertoast (from `.symlinks/plugins/fluttertoast/ios`)
   - google_sign_in_ios (from `.symlinks/plugins/google_sign_in_ios/darwin`)
@@ -1365,8 +1362,6 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/flutter_keyboard_visibility/ios"
   flutter_local_notifications:
     :path: ".symlinks/plugins/flutter_local_notifications/ios"
-  flutter_sms:
-    :path: ".symlinks/plugins/flutter_sms/ios"
   flutter_sound:
     :path: ".symlinks/plugins/flutter_sound/ios"
   fluttertoast:
@@ -1430,7 +1425,6 @@ SPEC CHECKSUMS:
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
   flutter_keyboard_visibility: 0339d06371254c3eb25eeb90ba8d17dca8f9c069
   flutter_local_notifications: 4cde75091f6327eb8517fa068a0a5950212d2086
-  flutter_sms: 91ce41530f55c85d6524d82307a5d555844c086a
   flutter_sound: d1ed7b8bac3c4513ac5ef8b90c15f3a6b860291b
   flutter_sound_core: 46f6f56752a209dcc72be9f09b71c8b626f70d49
   fluttertoast: 9f2f8e81bb5ce18facb9748d7855bf5a756fe3db

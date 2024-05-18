@@ -34,7 +34,7 @@ class ChatScreen extends ConsumerWidget {
         appBar: AppBar(
           backgroundColor: Colors.white,
           surfaceTintColor: Colors.white,
-          title: StreamBuilder<ClientData>(
+          title: StreamBuilder<Client>(
               stream: ref.read(clientControllerProvider).clientDataById(id),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
@@ -70,11 +70,13 @@ class ChatScreen extends ConsumerWidget {
                         children: [
                           Text(
                             name,
-                            style:
-                                Theme.of(context).textTheme.titleMedium!.copyWith(
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.w600,
-                                    ),
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleMedium!
+                                .copyWith(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.w600,
+                                ),
                             overflow: TextOverflow.ellipsis,
                           ),
                           snapshot.data!.isOnline!
@@ -106,7 +108,7 @@ class ChatScreen extends ConsumerWidget {
                                   ],
                                 )
                               : Text(
-                                  'last time check in 16 apr',
+                                  'offline',
                                   style: Theme.of(context)
                                       .textTheme
                                       .titleSmall!
@@ -125,12 +127,7 @@ class ChatScreen extends ConsumerWidget {
               }),
           actions: [
             IconButton(
-              onPressed: () => makeCall(
-                ref,
-                context,
-                name,
-                profilePic
-              ),
+              onPressed: () => makeCall(ref, context, name, profilePic),
               icon: const FaIcon(FontAwesomeIcons.video),
             ),
             IconButton(

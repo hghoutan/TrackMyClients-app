@@ -35,7 +35,7 @@ class ClientRepository {
 
   Future<void> saveClientDataToFirebase({
     required String password,
-    required ClientData client,
+    required Client client,
     required File? profilePic,
     required ProviderRef ref,
     required BuildContext context,
@@ -58,7 +58,7 @@ class ClientRepository {
       String photoUrl =
           'https://png.pngitem.com/pimgs/s/649-6490124_katie-notopoulos-katienotopoulos-i-write-about-tech-round.png';
 
-      ClientData updatedClient = client.copyWith(
+      Client updatedClient = client.copyWith(
         userId: clientId,
         profilePic: photoUrl,
         id: clientId,
@@ -85,7 +85,7 @@ class ClientRepository {
     }
   }
 
-  Stream<List<ClientData>> fetchAllClients() {
+  Stream<List<Client>> fetchAllClients() {
     try {
       return firestore
           .collection('users')
@@ -93,9 +93,9 @@ class ClientRepository {
           .collection('clients')
           .snapshots()
           .asyncMap((event) {
-        List<ClientData> clients = [];
+        List<Client> clients = [];
         for (var document in event.docs) {
-          ClientData clientData = ClientData.fromMap(document.data());
+          Client clientData = Client.fromMap(document.data());
           clients.add(clientData);
         }
         return clients;
@@ -105,7 +105,7 @@ class ClientRepository {
     }
   }
 
-  Stream<ClientData> clientData(String clientId) {
+  Stream<Client> clientData(String clientId) {
     return firestore
         .collection('users')
         .doc(auth.currentUser!.uid)
@@ -113,7 +113,7 @@ class ClientRepository {
         .doc(clientId)
         .snapshots()
         .map(
-          (event) => ClientData.fromMap(
+          (event) => Client.fromMap(
             event.data()!,
           ),
         );

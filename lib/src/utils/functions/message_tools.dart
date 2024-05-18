@@ -1,7 +1,7 @@
 import 'package:flutter_quill/quill_delta.dart';
 import 'package:mailer/mailer.dart';
 import 'package:mailer/smtp_server.dart';
-import 'package:trackmyclients_app/src/utils/services/google_service.dart';
+import 'package:twilio_flutter/twilio_flutter.dart';
 
 // const String _serviceId = 'service_qdktf8q';
 // const String _templateId = 'template_sqynhy9';
@@ -52,6 +52,69 @@ String deltaToHtml(Delta delta) {
   }
   return html.join('');
 }
+void sendScheduledWhatsAppMessage(
+  {
+    required String receiverNum,
+    required String senderName,
+    required String senderNum,
+    required String message,
+    required String dateTime
+  }
+
+) async {
+  final TwilioFlutter twilioFlutter = TwilioFlutter(
+      accountSid: 'ACa7beefb3ccebb002532b7e282e60eed6',
+      authToken: '8fb672566898423ed15a269ca0e319ed',
+      twilioNumber: '+14155238886',
+      messagingServiceSid:
+          'MG9c1453c6daf527120edc36bb0122e48a' // optional replace with messaging service sid, required for features like scheduled sms
+      );
+
+  try {
+    final customessage =
+        "New message from ${senderName}\n\n ${message} \n\nreply to : ${senderNum}";
+    final response = await twilioFlutter.sendScheduledWhatsAppMessage(
+        toNumber: receiverNum, messageBody: customessage,sendAt: dateTime);
+    if (response == 201) {
+      print('Message sent successfully');
+    } else {
+      print('Error sending message: ${response}');
+    }
+  } catch (e) {
+    print('Error sending message: ${e.toString()}');
+  }
+}
+void sendWhatsAppMessage(
+  {
+    required String receiverNum,
+    required String senderName,
+    required String senderNum,
+    required String message
+  }
+
+) async {
+  final TwilioFlutter twilioFlutter = TwilioFlutter(
+      accountSid: 'ACa7beefb3ccebb002532b7e282e60eed6',
+      authToken: '8fb672566898423ed15a269ca0e319ed',
+      twilioNumber: '+14155238886',
+      messagingServiceSid:
+          '' // optional replace with messaging service sid, required for features like scheduled sms
+      );
+
+  try {
+    final customessage =
+        "New message from ${senderName}\n\n ${message} \n\nreply to : ${senderNum}";
+    final response = await twilioFlutter.sendSMS(
+        toNumber: receiverNum, messageBody: customessage);
+    if (response == 201) {
+      print('Message sent successfully');
+    } else {
+      print('Error sending message: ${response}');
+    }
+  } catch (e) {
+    print('Error sending message: $e');
+  }
+}
 
 Future<void> sendMail({
   required String senderName,
@@ -71,10 +134,7 @@ Future<void> sendMail({
     //   return;
     // }
     // with mailgun
-    final smtpServer = mailgun(
-        _smtpLogin,
-        _password
-      );
+    final smtpServer = mailgun(_smtpLogin, _password);
     // send with mail.google.com
     // gmailSaslXoauth2(username, token);
 

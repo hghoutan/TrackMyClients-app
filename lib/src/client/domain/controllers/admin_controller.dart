@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../admin/domain/models/user.dart';
+import '../../../admin/domain/models/admin.dart';
 import '../repositories/admin_repository.dart';
 
 final adminControllerProvider = Provider((ref) {
@@ -16,7 +16,7 @@ class ClientController {
     required this.ref,
   });
 
-  Stream<UserData> getclientData(String adminId) {
+  Stream<Admin> getclientData(String adminId) {
     return authRepository.clientData(adminId);
   }
 }

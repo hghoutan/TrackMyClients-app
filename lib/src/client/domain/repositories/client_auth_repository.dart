@@ -58,7 +58,7 @@ class ClientAuthRepository {
     // Find the custom user in your collection
   }
 
-  Future<ClientData?> getCurrentClientData(String? adminUid) async {
+  Future<Client?> getCurrentClientData(String? adminUid) async {
     try {
       var clientData = await firestore
           .collection('users')
@@ -67,9 +67,9 @@ class ClientAuthRepository {
           .doc(auth.currentUser!.uid)
           .get();
 
-      ClientData? client;
+      Client? client;
       if (clientData.data() != null) {
-        client = ClientData.fromMap(clientData.data()!);
+        client = Client.fromMap(clientData.data()!);
       }
       return client;
     } catch (e) {

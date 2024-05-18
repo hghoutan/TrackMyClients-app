@@ -11,7 +11,7 @@ class SelectClientsScreen extends ConsumerWidget {
   const SelectClientsScreen({super.key});
 
   void selectClien(BuildContext context, String id) {
-    nextScreenAnimation(context, ChatScreen(id: id),rootNavgation: true);
+    nextScreenAnimation(context, ChatScreen(id: id), rootNavgation: true);
   }
 
   @override
@@ -34,49 +34,47 @@ class SelectClientsScreen extends ConsumerWidget {
           ),
         ],
       ),
-      body: StreamBuilder<List<ClientData>>(
-              stream: ref.read(clientControllerProvider).fetchAllClients(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return  const Center(child: CircularProgressIndicator());
-                }
-                return ListView.separated(
-                  itemCount: snapshot.data!.length,
-                  itemBuilder: (context, index) {
-                    final client = snapshot.data![index];
-                    return InkWell(
-                      onTap: () => selectClien(context, client.id!),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 6.0),
-                        child: ListTile(
-                          title: Text(
-                            client.name!,
-                            style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                              fontWeight: FontWeight.w600,
-                              color: Colors.black,
-                              fontSize: 18
-                            )
-                          ),
-                          leading: client.profilePic == null
-                              ? null
-                              : CircleAvatar(
-                                  backgroundImage: CachedNetworkImageProvider(client.profilePic!),
-                                  radius: 30,
-                                ),
-                        ),
+      body: StreamBuilder<List<Client>>(
+          stream: ref.read(clientControllerProvider).fetchAllClients(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            return ListView.separated(
+                itemCount: snapshot.data!.length,
+                itemBuilder: (context, index) {
+                  final client = snapshot.data![index];
+                  return InkWell(
+                    onTap: () => selectClien(context, client.id!),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 6.0),
+                      child: ListTile(
+                        title: Text(client.name!,
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleMedium!
+                                .copyWith(
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.black,
+                                    fontSize: 18)),
+                        leading: client.profilePic == null
+                            ? null
+                            : CircleAvatar(
+                                backgroundImage: CachedNetworkImageProvider(
+                                    client.profilePic!),
+                                radius: 30,
+                              ),
                       ),
-                    );
-                  },
-                  separatorBuilder: (_, __) =>
-                    const Divider(
+                    ),
+                  );
+                },
+                separatorBuilder: (_, __) => const Divider(
                       color: Colors.black12,
                       indent: 85,
                       height: 0,
                       thickness: .5,
-                    )
-                );
-              }
-            ),
+                    ));
+          }),
     );
   }
 }

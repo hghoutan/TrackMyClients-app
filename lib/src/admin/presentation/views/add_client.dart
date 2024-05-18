@@ -35,16 +35,16 @@ class _AddClientScreenState extends ConsumerState<AddClientScreen> {
 
   void storeUserData() async {
     if (newClientFormKey.currentState!.validate()) {
-      ClientData clientData = ClientData(
+      Client clientData = Client(
           name: nameController.text.trim(),
           email: emailController.text.trim(),
           phoneNumber: phoneController.text.trim());
       await ref.read(clientControllerProvider).saveClientDataToFirebase(
-        context,
-        passwordController.text.trim(),
-        clientData,
-        image,
-      );
+            context,
+            passwordController.text.trim(),
+            clientData,
+            image,
+          );
       Navigator.of(context).pop();
     }
   }

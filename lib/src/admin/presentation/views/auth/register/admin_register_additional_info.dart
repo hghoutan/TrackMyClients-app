@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:trackmyclients_app/src/admin/domain/controllers/auth_controller.dart';
-import 'package:trackmyclients_app/src/admin/domain/models/user.dart';
+import 'package:trackmyclients_app/src/admin/domain/models/admin.dart';
 
 import '../../../../../utils/images.dart';
 import '../../../widgets/main_button.dart';
@@ -9,7 +9,7 @@ import '../../../widgets/text_input.dart';
 import 'admin_register.dart';
 
 class AdminRegisterAdditionalInfoPage extends ConsumerStatefulWidget {
-  final UserData user;
+  final Admin user;
   const AdminRegisterAdditionalInfoPage({required this.user, super.key});
 
   @override
@@ -170,15 +170,18 @@ class _AdminRegisterAdditionalInfoPageState
                                   .validate()) {
                                 // await AuthService().verifyPhoneNumber(
                                 //     '+212${phoneController.text}');
-                                UserData newUserData =  widget.user.copyWith(
-                                  email: emailController.text,
-                                  phone: phoneController.text,
-                                  role: 'Admin'
-                                );
-                                String msg = await ref.read(authControllerProvider).signUp(context, newUserData, passwordController.text);
+                                Admin newUserData = widget.user.copyWith(
+                                    email: emailController.text,
+                                    phoneNumber: phoneController.text,
+                                    role: 'Admin');
+                                String msg = await ref
+                                    .read(authControllerProvider)
+                                    .signUp(context, newUserData,
+                                        passwordController.text);
 
-                                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                                    content: Text(msg),
+                                ScaffoldMessenger.of(context)
+                                    .showSnackBar(SnackBar(
+                                  content: Text(msg),
                                 ));
                                 // _showAlertDialog(context, emailController.text);
                               }

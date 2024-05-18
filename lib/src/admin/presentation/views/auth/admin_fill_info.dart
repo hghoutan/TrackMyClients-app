@@ -3,23 +3,24 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:trackmyclients_app/src/admin/domain/controllers/auth_controller.dart';
 import 'package:trackmyclients_app/src/admin/presentation/views/home.dart';
 
-import '../../../domain/models/user.dart';
+import '../../../domain/models/admin.dart';
 import '../../../../utils/functions/next_screen.dart';
 import '../../../../utils/images.dart';
 import '../../widgets/drop_down_input.dart';
 import '../../widgets/text_input.dart';
 
 class AdminFillInfoScreen extends ConsumerStatefulWidget {
-  final UserData userData;
+  final Admin userData;
   const AdminFillInfoScreen({required this.userData, super.key});
 
   @override
-  ConsumerState<AdminFillInfoScreen> createState() => _AdminFillInfoScreenState();
+  ConsumerState<AdminFillInfoScreen> createState() =>
+      _AdminFillInfoScreenState();
 }
 
 final GlobalKey<FormState> infoFormKey = GlobalKey<FormState>();
 
-class _AdminFillInfoScreenState extends ConsumerState<AdminFillInfoScreen>{
+class _AdminFillInfoScreenState extends ConsumerState<AdminFillInfoScreen> {
   TextEditingController firstNameController = TextEditingController();
   TextEditingController lastNameController = TextEditingController();
   TextEditingController birthdayController = TextEditingController();
@@ -226,19 +227,18 @@ class _AdminFillInfoScreenState extends ConsumerState<AdminFillInfoScreen>{
                                     onPressed: () async {
                                       if (infoFormKey.currentState!
                                           .validate()) {
-                                        UserData user = widget.userData
-                                            .copyWith(
-                                                firstName:
-                                                    firstNameController.text,
-                                                lastName:
-                                                    lastNameController.text,
-                                                phone: phoneController.text,
-                                                birthdayYear:
-                                                    birthdayController.text,
-                                                gender: selectedGender,
-                                                city: selectedCity);
-                                        // updating user info        
-                                        ref.watch(authControllerProvider).updateUserData(context, user);
+                                        Admin user = widget.userData.copyWith(
+                                            firstName: firstNameController.text,
+                                            lastName: lastNameController.text,
+                                            phoneNumber: phoneController.text,
+                                            birthdayYear:
+                                                birthdayController.text,
+                                            gender: selectedGender,
+                                            city: selectedCity);
+                                        // updating user info
+                                        ref
+                                            .watch(authControllerProvider)
+                                            .updateUserData(context, user);
 
                                         nextScreenAnimation(
                                             context, const HomeScreen());

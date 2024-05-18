@@ -28,15 +28,14 @@ class ClientAuthController {
         aui, email, password);
   }
 
-  Future<ClientData?> getClientData() async {
+  Future<Client?> getClientData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? adminUid =  prefs.getString('adminUid');
-    ClientData? client =
-        await clientAuthRepository.getCurrentClientData(adminUid);
+    String? adminUid = prefs.getString('adminUid');
+    Client? client = await clientAuthRepository.getCurrentClientData(adminUid);
     return client;
   }
+
   void setUserState(String auid, bool isOnline) {
     clientAuthRepository.setUserState(auid, isOnline);
   }
-  
 }

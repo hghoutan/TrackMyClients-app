@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:trackmyclients_app/src/admin/domain/models/chat.dart';
 import 'package:trackmyclients_app/src/admin/domain/models/client.dart';
-import 'package:trackmyclients_app/src/admin/domain/models/user.dart';
+import 'package:trackmyclients_app/src/admin/domain/models/admin.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../admin/domain/models/message.dart';
@@ -77,13 +77,12 @@ class ClientChatRepository {
     });
   }
 
-  void sendTextMessage(
-      {required BuildContext context,
-      required String message,
-      required String recieverUserId,
-      required ClientData senderUser,
-      
-      }) async {
+  void sendTextMessage({
+    required BuildContext context,
+    required String message,
+    required String recieverUserId,
+    required Client senderUser,
+  }) async {
     try {
       DateTime timeSent = DateTime.now();
 
@@ -93,7 +92,7 @@ class ClientChatRepository {
           .collection('clients')
           .doc(auth.currentUser!.uid)
           .get();
-      ClientData receiverClientData = ClientData.fromMap(clientDataMap.data()!);
+      Client receiverClientData = Client.fromMap(clientDataMap.data()!);
       String messageId = const Uuid().v1();
 
       _saveDataToContactsSubcollection(
@@ -117,16 +116,15 @@ class ClientChatRepository {
   }
 
   void _saveDataToContactsSubcollection(
-    ClientData senderUserData,
-    ClientData? recieverUserData,
+    Client senderUserData,
+    Client? recieverUserData,
     String text,
     DateTime timeSent,
     String recieverUserId,
   ) async {
     ChatContact recieverChatContact = ChatContact(
       name: senderUserData.name!,
-      profilePic:
-          senderUserData.profilePic!,
+      profilePic: senderUserData.profilePic!,
       contactId: senderUserData.id!,
       timeSent: timeSent,
       lastMessage: text,
@@ -202,11 +200,12 @@ class ClientChatRepository {
           message.toMap(),
         );
   }
+
   void sendFileMessage({
     required BuildContext context,
     required File file,
     required String recieverUserId,
-    required ClientData senderClientData,
+    required Client senderClientData,
     required ProviderRef ref,
     required MessageEnum messageEnum,
   }) async {
@@ -220,14 +219,14 @@ class ClientChatRepository {
                 file,
               );
 
-      ClientData? recieverUserData;
+      Client? recieverUserData;
       var userDataMap = await firestore
           .collection('users')
           .doc(recieverUserId)
           .collection('clients')
           .doc(auth.currentUser!.uid)
           .get();
-      recieverUserData = ClientData.fromMap(userDataMap.data()!);
+      recieverUserData = Client.fromMap(userDataMap.data()!);
 
       String contactMsg;
 
@@ -265,6 +264,7 @@ class ClientChatRepository {
       showSnackBar(context: context, content: e.toString());
     }
   }
+
   void setChatMessageSeen(
     BuildContext context,
     String recieverUserId,

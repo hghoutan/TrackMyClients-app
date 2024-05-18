@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:trackmyclients_app/src/admin/domain/models/user.dart';
+import 'package:trackmyclients_app/src/admin/domain/models/admin.dart';
 import 'package:trackmyclients_app/src/admin/presentation/views/auth/register/admin_register_additional_info.dart';
 
 import '../../../../../utils/functions/next_screen.dart';
@@ -207,7 +207,7 @@ class _AdminRegisterScreenState extends State<AdminRegisterScreen> {
                                     onPressed: () {
                                       if (registerFormKey.currentState!
                                           .validate()) {
-                                        UserData user = UserData(
+                                        Admin user = Admin(
                                             firstName: firstNameController.text,
                                             lastName: lastNameController.text,
                                             birthdayYear:
