@@ -61,9 +61,13 @@
 	<key>NSCameraUsageDescription</key>
 	<string>Camera Library Use</string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>Microphone Use</string>
+	<string>... explain why the app uses the microphone here ...</string>
 	<key>NSAppleMusicUsageDescription</key>
       <string>Need to hear recording</string>
-	
+	<key>NSAppTransportSecurity</key>
+       <dict>
+               <key>NSAllowsArbitraryLoads</key>
+               <true/>
+       </dict>
 </dict>
 </plist>

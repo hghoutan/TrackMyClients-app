@@ -11,6 +11,7 @@ import 'package:trackmyclients_app/src/admin/presentation/views/add_client.dart'
 import 'package:trackmyclients_app/src/admin/presentation/widgets/home_calls_container.dart';
 import 'package:trackmyclients_app/src/admin/presentation/widgets/home_message_container.dart';
 import 'package:trackmyclients_app/src/utils/functions/next_screen.dart';
+import 'package:trackmyclients_app/src/utils/images.dart';
 
 import '../../domain/controllers/chat_controller.dart';
 import '../../domain/models/chat.dart';
@@ -303,7 +304,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                     child: CircularProgressIndicator());
                               }
                               return switcherIndex == 0
-                                  ? ListView.separated(
+                                  ?  snapshot.data!.length == 0 ?
+                                    Center(
+                                      child: Image.asset(Images.emptyData),
+                                    )
+                              
+                                  : ListView.separated(
                                       itemCount: snapshot.data!.length,
                                       itemBuilder: (context, index) {
                                         ChatContact messageData =
@@ -313,7 +319,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                         return HomeMessageContainer(
                                             chat: messageData,
                                             timeSent: timeSent,
-                                            active: index == 0);
+                                            active: !(messageData
+                                                .lastMessageSeen!));
                                       },
                                       separatorBuilder:
                                           (BuildContext context, int index) {

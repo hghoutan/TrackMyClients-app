@@ -29,6 +29,10 @@ class _ClientLoginScreenState extends ConsumerState<ClientLoginScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            Text(
+              "Se connecter",
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
             CustomTextInput(
               controller: cIDController,
               hintText: 'Company ID',

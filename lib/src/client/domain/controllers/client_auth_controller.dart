@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:trackmyclients_app/src/admin/domain/models/client.dart';
+import 'package:trackmyclients_app/src/admin/domain/repositories/auth_repository.dart';
 import 'package:trackmyclients_app/src/client/domain/repositories/client_auth_repository.dart';
 
 final clientAuthControllerProvider = Provider((ref) {
@@ -37,5 +38,8 @@ class ClientAuthController {
 
   void setUserState(String auid, bool isOnline) {
     clientAuthRepository.setUserState(auid, isOnline);
+  }
+  Future<void> signOut() async{
+    await clientAuthRepository.signOut();
   }
 }

@@ -54,6 +54,7 @@ class ChatRepository {
               contactId: chatContact.contactId,
               timeSent: chatContact.timeSent,
               lastMessage: chatContact.lastMessage,
+              lastMessageSeen: chatContact.lastMessageSeen
             ),
           );
         }
@@ -136,6 +137,7 @@ class ChatRepository {
       contactId: senderUserData.id!,
       timeSent: timeSent,
       lastMessage: text,
+      lastMessageSeen: false
     );
     await firestore
         .collection('users')
@@ -154,6 +156,7 @@ class ChatRepository {
       contactId: recieverUserData.id!,
       timeSent: timeSent,
       lastMessage: text,
+      lastMessageSeen: true
     );
     await firestore
         .collection('users')
@@ -284,6 +287,13 @@ class ChatRepository {
           .doc(auth.currentUser!.uid)
           .collection('chats')
           .doc(recieverUserId)
+          .update({'lastMessageSeen': true});
+
+      await firestore
+          .collection('users')
+          .doc(auth.currentUser!.uid)
+          .collection('chats')
+          .doc(recieverUserId)
           .collection('messages')
           .doc(messageId)
           .update({'isSeen': true});
@@ -298,6 +308,15 @@ class ChatRepository {
           .collection('messages')
           .doc(messageId)
           .update({'isSeen': true});
+
+      await firestore
+          .collection('users')
+          .doc(auth.currentUser!.uid)
+          .collection('clients')
+          .doc(recieverUserId)
+          .collection('chats')
+          .doc(auth.currentUser!.uid)
+          .update({'lastMessageSeen': true});
     } catch (e) {
       showSnackBar(context: context, content: e.toString());
     }

@@ -91,4 +91,8 @@ class ClientAuthRepository {
       print(e.toString());
     }
   }
+
+  Future<void> signOut() async {
+    await auth.signOut();
+  }
 }

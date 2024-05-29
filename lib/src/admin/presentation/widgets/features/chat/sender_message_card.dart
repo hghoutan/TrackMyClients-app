@@ -41,9 +41,9 @@ class SenderMessageCard extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.only(
                   left: 10,
-                  right: 30,
+                  right: 10,
                   top: 5,
-                  bottom: 20,
+                  bottom: 5,
                 ),
                 child: DisplayTextImage(message: message, type: type, isClientSide: true,)
                   ,

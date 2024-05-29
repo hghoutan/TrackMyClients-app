@@ -22,14 +22,14 @@ class _LayoutScreenState extends ConsumerState<LayoutScreen>
   final notificationService = NotificationsService();
   TextEditingController searchController = TextEditingController();
   List<ChatContact> initialContactList = [];
-  List<ChatContact>? contacts;
+  List<ChatContact> contacts = [];
 
-  Future<void> getChatContacts() async {
-    initialContactList =
-        await ref.read(chatControllerProvider).chatContacts().first;
-    setState(() {
-      contacts = List.from(initialContactList);
-    });
+  Future<void> getChatContacts(List<ChatContact> list) async {
+    if (initialContactList.toString() == list.toString()){
+      return;
+    }
+    initialContactList = list;
+    contacts = List.from(list);
   }
 
   searchContact(String value) async {
@@ -47,7 +47,7 @@ class _LayoutScreenState extends ConsumerState<LayoutScreen>
   @override
   void initState() {
     super.initState();
-    getChatContacts();
+    // getChatContacts();
     notificationService.firebaseNotification(context);
     WidgetsBinding.instance.addObserver(this);
   }
@@ -141,7 +141,16 @@ class _LayoutScreenState extends ConsumerState<LayoutScreen>
               ),
             ),
             const SizedBox(height: 24.0),
-            ContactsList(contacts: contacts)
+            StreamBuilder<List<ChatContact>>(
+                stream: ref.watch(chatControllerProvider).chatContacts(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(child: CircularProgressIndicator());
+                  }
+                  getChatContacts(snapshot.data!);
+
+                  return ContactsList(contacts: contacts);
+                })
           ],
         ),
       ),

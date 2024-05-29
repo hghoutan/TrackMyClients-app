@@ -51,7 +51,7 @@ class HomeMessageContainer extends StatelessWidget {
                         'Client: ${chat.name}',
                         style: Theme.of(context).textTheme.titleSmall!.copyWith(
                               color: Colors.black,
-                              fontWeight: FontWeight.w400,
+                              fontWeight: FontWeight.w600,
                             ),
                       ),
                       Text(

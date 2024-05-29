@@ -37,6 +37,8 @@ class _DisplayTextImageState extends State<DisplayTextImage> {
         : widget.type == MessageEnum.audio
             ? StatefulBuilder(builder: (context, setState) {
                 return IconButton(
+                  splashColor: Colors.transparent,
+                  highlightColor: Colors.transparent,
                   constraints: const BoxConstraints(
                     minWidth: 100,
                   ),
@@ -58,7 +60,7 @@ class _DisplayTextImageState extends State<DisplayTextImage> {
                     child: Icon(
                       isPlaying ? FontAwesomeIcons.circlePause
                       : FontAwesomeIcons.circlePlay,
-                      color: Colors.white,
+                      color: widget.isClientSide ? null : Colors.white,
                     ),
                   ),
                 );

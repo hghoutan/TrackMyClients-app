@@ -128,6 +128,7 @@ class ClientChatRepository {
       contactId: senderUserData.id!,
       timeSent: timeSent,
       lastMessage: text,
+      lastMessageSeen: false
     );
     await firestore
         .collection('users')
@@ -146,6 +147,7 @@ class ClientChatRepository {
       contactId: recieverUserData.id!,
       timeSent: timeSent,
       lastMessage: text,
+      lastMessageSeen: false
     );
     await firestore
         .collection('users')
@@ -278,10 +280,26 @@ class ClientChatRepository {
           .doc(auth.currentUser!.uid)
           .collection('chats')
           .doc(recieverUserId)
+          .update({'lastMessageSeen': true});
+
+      await firestore
+          .collection('users')
+          .doc(recieverUserId)
+          .collection('clients')
+          .doc(auth.currentUser!.uid)
+          .collection('chats')
+          .doc(recieverUserId)
           .collection('messages')
           .doc(messageId)
           .update({'isSeen': true});
 
+       await firestore
+          .collection('users')
+          .doc(recieverUserId)
+          .collection('chats')
+          .doc(auth.currentUser!.uid)
+          .update({'lastMessageSeen': true});
+          
       await firestore
           .collection('users')
           .doc(recieverUserId)

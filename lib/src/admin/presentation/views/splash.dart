@@ -8,6 +8,7 @@ import 'package:trackmyclients_app/src/admin/domain/models/client.dart';
 import 'package:trackmyclients_app/src/admin/presentation/views/auth/admin_login.dart';
 import 'package:trackmyclients_app/src/admin/presentation/views/main_screen.dart';
 import 'package:trackmyclients_app/src/client/domain/controllers/client_auth_controller.dart';
+import 'package:trackmyclients_app/src/client/presentation/views/client_main_screen.dart';
 
 import '../../../client/domain/controllers/admin_controller.dart';
 import '../../../client/presentation/views/client_chat.dart';
@@ -35,7 +36,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 2),
+      duration: const Duration(seconds: 01),
     );
     _animation = Tween<double>(
       begin: 0,
@@ -53,13 +54,12 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   Future<void> _gotoWelcomePage() async {
     Admin? user = await ref.watch(authControllerProvider).getUserData();
     if (user != null) {
-      if (user.role! == 'Admin') {
         await notificationsService.getToken();
         nextScreenReplaceAnimation(context, const MainScreen());
         return;
-      }
+
     }
-    
+
     final prefs = await SharedPreferences.getInstance();
     String? aui = prefs.getString('adminUid');
     if (aui == null) {
@@ -67,7 +67,10 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
       return;
     }
 
-     nextScreenReplaceAnimation(context, ClientChatScreen(id: aui));
+     nextScreenReplaceAnimation(context,
+      // ClientMainScreen()
+      ClientChatScreen(id: aui)
+    );
   }
 
   @override

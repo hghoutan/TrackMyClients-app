@@ -3,12 +3,14 @@ import 'dart:io';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_sound/public/flutter_sound_recorder.dart';
+import 'package:flutter_sound/flutter_sound.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:trackmyclients_app/src/client/domain/controllers/client_chat_controller.dart';
 import 'package:trackmyclients_app/src/utils/utils.dart';
+import 'package:audio_session/audio_session.dart';
+import 'package:flutter_sound_platform_interface/flutter_sound_recorder_platform_interface.dart';
 
 import '../../../../../utils/enums/message_enum.dart';
 import '../../../../domain/controllers/chat_controller.dart';
@@ -29,27 +31,75 @@ class _BottomChatFieldState extends ConsumerState<BottomChatField> {
   final notificationsService = NotificationsService();
 
   bool isShowSendButton = false;
-  FlutterSoundRecorder? _soundRecorder;
-  bool isRecorderInit = false;
-  bool isShowEmojiContainer = false;
+
+  Codec _codec = Codec.aacMP4;
+  String _mPath = '';
+  FlutterSoundRecorder? _mRecorder = FlutterSoundRecorder();
+  bool _mRecorderIsInited = false;
   bool isRecording = false;
+
+  bool isShowEmojiContainer = false;
   FocusNode focusNode = FocusNode();
 
   @override
   void initState() {
     super.initState();
-    _soundRecorder = FlutterSoundRecorder();
-    notificationsService.getReceiverToken(widget.recieverUserId, isClientSide: widget.isFromClientSide);
-    openAudio();
+    requestRecordingPermissions();
+    openTheRecorder().then((value) {
+      setState(() {
+        _mRecorderIsInited = true;
+      });
+    });
+    notificationsService.getReceiverToken(widget.recieverUserId,
+        isClientSide: widget.isFromClientSide);
   }
 
-  void openAudio() async {
+  Future<void> openTheRecorder() async {
+    await _mRecorder!.openRecorder();
+    final session = await AudioSession.instance;
+    await session.configure(AudioSessionConfiguration(
+      avAudioSessionCategory: AVAudioSessionCategory.playAndRecord,
+      avAudioSessionCategoryOptions:
+          AVAudioSessionCategoryOptions.allowBluetooth |
+              AVAudioSessionCategoryOptions.defaultToSpeaker,
+      avAudioSessionMode: AVAudioSessionMode.spokenAudio,
+      avAudioSessionRouteSharingPolicy:
+          AVAudioSessionRouteSharingPolicy.defaultPolicy,
+      avAudioSessionSetActiveOptions: AVAudioSessionSetActiveOptions.none,
+      androidAudioAttributes: const AndroidAudioAttributes(
+        contentType: AndroidAudioContentType.speech,
+        flags: AndroidAudioFlags.none,
+        usage: AndroidAudioUsage.voiceCommunication,
+      ),
+      androidAudioFocusGainType: AndroidAudioFocusGainType.gain,
+      androidWillPauseWhenDucked: true,
+    ));
+    _mRecorderIsInited = true;
+  }
+
+  void record(String path) {
+    _mRecorder!
+        .startRecorder(
+      toFile: path,
+      codec: _codec,
+      audioSource: AudioSource.microphone,
+    )
+        .then((value) {
+      setState(() {});
+    });
+  }
+
+  void stopRecorder(String path) async {
+    await _mRecorder!.stopRecorder();
+    sendFileMessage(File(path), MessageEnum.audio);
+  }
+
+  Future<bool> requestRecordingPermissions() async {
     final status = await Permission.microphone.request();
     if (status != PermissionStatus.granted) {
       throw RecordingPermissionException('Mic permission not allowed!');
     }
-    await _soundRecorder!.openRecorder();
-    isRecorderInit = true;
+    return true;
   }
 
   void sendTextMessage() async {
@@ -67,27 +117,24 @@ class _BottomChatFieldState extends ConsumerState<BottomChatField> {
               widget.recieverUserId,
             );
       }
-      
+
       await notificationsService.sendNotification(
-        body:  _messageController.text.trim(),
+        body: _messageController.text.trim(),
       );
       setState(() {
         _messageController.text = '';
       });
     } else {
-      var tempDir = await getTemporaryDirectory();
-      var path = '${tempDir.path}/flutter_sound.aac';
-      if (!isRecorderInit) {
+      if (!_mRecorderIsInited) {
         return;
       }
-      if (isRecording) {
-        await _soundRecorder!.stopRecorder();
+      var tempDir = await getTemporaryDirectory();
+      _mPath = '${tempDir.path}/Track_my_clients.mp4';
+      if (_mRecorder!.isStopped) {
+        record(_mPath);
       } else {
-        await _soundRecorder!.startRecorder(
-          toFile: path,
-        );
+        stopRecorder(_mPath);
       }
-
       setState(() {
         isRecording = !isRecording;
       });
@@ -158,8 +205,11 @@ class _BottomChatFieldState extends ConsumerState<BottomChatField> {
   void dispose() {
     super.dispose();
     _messageController.dispose();
-    _soundRecorder!.closeRecorder();
-    isRecorderInit = false;
+
+    _mRecorder!.closeRecorder();
+    _mRecorder = null;
+    // _soundRecorder!.closeRecorder();
+    // isRecorderInit = false;
   }
 
   @override

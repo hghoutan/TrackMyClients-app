@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 // import 'package:flutter_sms/flutter_sms.dart';
 import 'package:trackmyclients_app/firebase_options.dart';
-import 'package:trackmyclients_app/src/utils/functions/message_tools.dart';
 
 import 'src/config/app_router.dart';
 import 'src/utils/styles.dart';

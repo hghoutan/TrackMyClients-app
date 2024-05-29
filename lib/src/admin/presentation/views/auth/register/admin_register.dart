@@ -213,7 +213,9 @@ class _AdminRegisterScreenState extends State<AdminRegisterScreen> {
                                             birthdayYear:
                                                 birthdayController.text,
                                             gender: selectedGender,
-                                            city: selectedCity);
+                                            city: selectedCity,
+                                            role: 'Admin'
+                                          );
                                         nextScreenAnimation(
                                             context,
                                             AdminRegisterAdditionalInfoPage(

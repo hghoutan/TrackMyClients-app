@@ -6,7 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:trackmyclients_app/src/admin/domain/models/admin.dart';
 import 'package:trackmyclients_app/src/admin/presentation/views/auth/admin_fill_info.dart';
 import 'package:trackmyclients_app/src/admin/presentation/views/auth/admin_login.dart';
-import 'package:trackmyclients_app/src/admin/presentation/views/home.dart';
+import 'package:trackmyclients_app/src/admin/presentation/views/main_screen.dart';
 import 'package:trackmyclients_app/src/utils/functions/next_screen.dart';
 
 final authRepositoryProvider = ChangeNotifierProvider(
@@ -72,7 +72,19 @@ class AuthRepository extends ChangeNotifier {
     try {
       UserCredential credential = await auth.signInWithEmailAndPassword(
           email: email, password: password);
-      return 'Login successful';
+      User? user = credential.user;
+      try {
+        Admin userData = Admin.fromMap(
+            (await _users.doc(user!.uid).get()).data() as Map<String, dynamic>);
+        if (userData.isValid()) {
+          return 'Login successful';
+        }
+        return 'Need to fill your information';
+      } catch (e) {
+        Admin userData = Admin(id: user!.uid, email: user.email);
+        nextScreenAnimation(context, AdminFillInfoScreen(userData: userData));
+      }
+      return 'Need to fill your information';
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
         return 'No user found for that email.';
@@ -92,6 +104,8 @@ class AuthRepository extends ChangeNotifier {
     try {
       UserCredential credential = await auth.createUserWithEmailAndPassword(
           email: userData.email!, password: password);
+      // set default status
+      userData.isOnline = false;
       String uid = credential.user!.uid;
       _users.doc(uid).set(userData.toMap());
       auth.currentUser!.sendEmailVerification();
@@ -129,6 +143,9 @@ class AuthRepository extends ChangeNotifier {
   Future<String> signInWithGoogle(BuildContext context) async {
     try {
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+      if (googleUser == null) {
+        return 'An unknown error occurred.';
+      }
       final GoogleSignInAuthentication googleAuth =
           await googleUser!.authentication;
       final credential = GoogleAuthProvider.credential(
@@ -149,11 +166,13 @@ class AuthRepository extends ChangeNotifier {
             Admin userData = Admin.fromMap((await _users.doc(user.uid).get())
                 .data() as Map<String, dynamic>);
             if (userData.isValid()) {
-              nextScreenReplaceAnimation(context, const HomeScreen());
+              userData.isOnline = true;
+              nextScreenReplaceAnimation(context, const MainScreen());
               return 'Google sign-in successful.';
             }
           } catch (e) {
             Admin userData = Admin(id: user.uid, email: user.email);
+            userData.isOnline = false;
             nextScreenAnimation(
                 context, AdminFillInfoScreen(userData: userData));
           }
@@ -183,6 +202,5 @@ class AuthRepository extends ChangeNotifier {
 
   Future<void> signOut() async {
     await auth.signOut();
-    notifyListeners();
   }
 }

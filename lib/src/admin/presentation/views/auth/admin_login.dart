@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:trackmyclients_app/src/admin/domain/controllers/auth_controller.dart';
 import 'package:trackmyclients_app/src/admin/presentation/views/auth/forgot_password.dart';
 import 'package:trackmyclients_app/src/admin/presentation/views/auth/register/admin_register.dart';
+import 'package:trackmyclients_app/src/admin/presentation/views/main_screen.dart';
 import 'package:trackmyclients_app/src/client/presentation/views/client_login.dart';
 
 import '../../../../utils/functions/next_screen.dart';
@@ -150,11 +151,10 @@ class AdminLoginScreen extends ConsumerWidget {
                                   .showSnackBar(SnackBar(content: Text(msg)));
                               return;
                             }
-
                             if (!auth.isEmailVerified()) {
                               msg = 'Please verify your email';
                             } else {
-                              nextScreenAnimation(context, const HomeScreen());
+                              nextScreenAnimation(context, const MainScreen());
                               return;
                             }
 

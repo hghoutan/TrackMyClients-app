@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:trackmyclients_app/src/admin/domain/controllers/auth_controller.dart';
 import 'package:trackmyclients_app/src/admin/presentation/views/home.dart';
+import 'package:trackmyclients_app/src/admin/presentation/views/main_screen.dart';
 
 import '../../../domain/models/admin.dart';
 import '../../../../utils/functions/next_screen.dart';
@@ -234,14 +235,16 @@ class _AdminFillInfoScreenState extends ConsumerState<AdminFillInfoScreen> {
                                             birthdayYear:
                                                 birthdayController.text,
                                             gender: selectedGender,
-                                            city: selectedCity);
+                                            city: selectedCity,
+                                            role: 'Admin'
+                                          );
                                         // updating user info
                                         ref
                                             .watch(authControllerProvider)
                                             .updateUserData(context, user);
 
                                         nextScreenAnimation(
-                                            context, const HomeScreen());
+                                            context, const MainScreen());
                                       }
                                     },
                                     backgroundColor:
